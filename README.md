@@ -25,5 +25,5 @@ Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write $\begin{equ
 \end{equation}$
 where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
 
-It can be shown
+
   
