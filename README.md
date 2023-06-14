@@ -35,6 +35,7 @@ where $w_j(x)=H(x,\Tilde{y}_j)-H(x,\Tilde{y}_{j-1}).$
 
 It can be shown under given assumptions, that the IDR conditional CDF and its smooth version are consistent estimators of the conditional CDF. Furthermore under additional regularity assumptions, also the conditional IDR density is a consistent estimator of the conditional density.
 
+##
 
 
 
