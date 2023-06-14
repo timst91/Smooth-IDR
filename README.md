@@ -44,7 +44,23 @@ $\begin{equation*}
     \mathrm{CV}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\Tilde{h}_{x_{-i}}(x_i,y_i)},
 \end{equation*}.$ 
 The IDR CDF $H$ can be efficiently computed with the PAV algorithm in $O(log(n)n)$ time. However, computing $\mathrm{CV}(h)$
-requires $O(mlog(n)n^2) computational steps. The cross-validation error can be estimated using the 
+requires $O(mlog(n)n^2) computational steps. The cross-validation error can be estimated using a new procedure called 'one-fit grid search' which requires only one instead of n model generations. 
+The criterion is defined as $\begin{equation*}
+    \mathrm{OF}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\Bar{h}_{-i}(x_i,y_i)},
+\end{equation*}
+where $\log{\Bar{h}_{-i}(x_i,y_i)}$ is given by setting the $i^{th}$ weight to zero and re-scaling the other weights of the IDR density. 
+Computing $\mathrm{OF}(h)$ reduces the computational effort to O(nmlog(n)) steps.
+
+The second approach is a local bandwidth estimator which is obtained by minimizing an upper bound of the $\mathrm{MSE}$ which converges to zero as $n$ approaches infinity. The estimator is defined as:
+ $\begin{equation}\label{eq: estimator of h_opt}
+    \hat{h}^*_n(y)=c\bigg(\frac{4\kappa(0)\big(\frac{\log(n)}{n}\big)^{1/3}}{\big|\Tilde{h}''_x(y)\big|\int_\mathbb{R} u^2\kappa(u)\ du}\bigg)^\frac{1}{3},
+\end{equation}$ 
+
+
+The constant $c$ is unknown in general and has to be chosen a priori or by minimizing $\mathrm{OF}$ or $\mathrm{OF}.$
+
+It is thus advantageous, that the absolute difference $\max_{c \in [c_{\min}, c_{\max}]}|\mathrm{OF}(h_{c,n}) - \mathrm{CV}(h_{c,n})|$ converges in probability to zero, for $h_{c,n}=(\log(n)/n)^{1/9} c$ \ and  $0<c_{\min}\leq c_{\max}<\infty.$
+
 
 
 
