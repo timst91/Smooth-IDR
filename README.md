@@ -7,7 +7,7 @@ Isotonic distributional regression (IDR) aims at modeling the conditional CDF of
 The IDR estimator is obtained by minimizing the Continuous Ranked Probability Score (CRPS).
 When the observations of $X$ are given by $x_1<\dots<x_n$ and the corresponding observations of $Y$ by $y_1,\dots,y_n,$ the IDR conditional CDF of $Y$ at a threshold $y \in \mathbb{R}$ given $x_i$ is given by
 
-$$\begin{equation}\label{eq:IDR}
+$$\begin{equation}
     H(x_i,y)=\min_{\substack{j:j\leq i}} \max_{\substack{h:h\geq i}} \frac{1}{h-j+1}\sum_{k=j}^h \mathbb{1}_{[Y_k\leq y]}.
 \end{equation}$$
 
