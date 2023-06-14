@@ -13,31 +13,32 @@ $$\begin{equation}
 
 For values of $ x \in \mathcal{X},$ the IDR CDF at a threshold $y \in \mathbb{R}$ is defined as a linear interpolation between $H(x_j,y)$ and $H(x_{j+1},y),$ where $1\leq j\leq n$ is such that 
 $x_j < x< x_{j+1}.$ 
-The function $H(x,\cdot)$ is a piecewise continuous function with jumps at the unique observed values of $Y$ given by $\tilde{y}_1,\dots,\tilde{y}_m.$
+The function $H(x,\cdot)$ is a piecewise continuous function with jumps at the unique observed values of $Y$ given by $\widetilde{y}_1,\dots,\widetilde{y}_m.$
+
 
 We obtain a smooth estimator of the conditional CDF using kernel-smoothing. We define the kernel-smoothed IDR CDF as 
 
 $$\begin{equation}
-        \Tilde{H}(x,y)=\int_\mathbb{R}H(x,t)K_h(y-t) \ dt,
+        \widetilde{H}(x,y)=\int_\mathbb{R}H(x,t)K_h(y-t) \ dt,
 \end{equation}$$
     
 where $K_h(x)=\kappa(x/h)/h$ and $\kappa$ is a valid kernel function and $h>0$ is the bandwidth.
 
-Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write 
+Since $H(x,y)$ is discrete with jumps at $\widetilde{y}_i,$ we can write 
 
 $$\begin{equation}
-    \Tilde{H}(x,y)=\sum_{j=1}^mH(x,\Tilde{y}_j)\int_{\Tilde{y}_j}^{\Tilde{y}_{j+1}}K_h(y-t) \ dt,
+    \widetilde{H}(x,y)=\sum_{j=1}^mH(x,\widetilde{y}_j)\int_{\widetilde{y}_j}^{\widetilde{y}_{j+1}}K_h(y-t) \ dt,
 \end{equation}$$
 
-where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
+where we define the boundary cases $\widetilde{y}_{m+1} = \infty$ and $\widetilde{y}_0 = -\infty.$
 
 From the last equation, we can infer on the condtional density of $Y|X=x$ by computing the derivative of the smooth IDR:
 $$\begin{align}
-    \Tilde{h}(x,y)&= \frac{\partial}{\partial y}\Tilde{H}(x,y)= \sum_{j=1}^mH(x,\Tilde{y}_j)(K_h(y-\Tilde{y}_j)-K_h(y-\Tilde{y}_{j+1})) \notag \\
-    &=\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_j)-\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_{j+1})\notag \\
-    &= \sum_{j=1}^mw_j(x)K_h(y-\Tilde{y}_j),
+    \widetilde{h}(x,y)&= \frac{\partial}{\partial y}\widetilde{H}(x,y)= \sum_{j=1}^mH(x,\widetilde{y}_j)(K_h(y-\widetilde{y}_j)-K_h(y-\widetilde{y}_{j+1})) \notag \\
+    &=\sum_{j=1}^mH(x,\widetilde{y}_j)K_h(y-\widetilde{y}_j)-\sum_{j=1}^mH(x,\widetilde{y}_j)K_h(y-\widetilde{y}_{j+1})\notag \\
+    &= \sum_{j=1}^mw_j(x)K_h(y-\widetilde{y}_j),
 \end{align}$$
-where $w_j(x)=H(x,\Tilde{y}_j)-H(x,\Tilde{y}_{j-1}).$
+where $w_j(x)=H(x,\widetilde{y}_j)-H(x,\widetilde{y}_{j-1}).$
 
 It can be shown under given assumptions, that the IDR conditional CDF and its smooth version are consistent estimators of the conditional CDF. Furthermore under additional regularity assumptions, also the conditional IDR density is a consistent estimator of the conditional density.
 
@@ -46,7 +47,7 @@ It can be shown under given assumptions, that the IDR conditional CDF and its sm
 The smooth IDR CDF and density require tuning of the bandwith $h,$ for which we provide two possible approaches.
 One possible approach is to compute the cross-validation error for different values of $h$ and choose the value that minimizes the score. Using the $\mathrm{logS}$ scoring rule, the leave-one-out cross-validation error is defined by 
 $$\begin{equation*}
-    \mathrm{CV}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\Tilde{h}_{x_{-i}}(x_i,y_i)},
+    \mathrm{CV}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\widetilde{h}_{x_{-i}}(x_i,y_i)},
 \end{equation*}.$$
 The IDR CDF $H$ can be efficiently computed with the PAV algorithm in $O(log(n)n)$ time. However, computing $\mathrm{CV}(h)$
 requires $O(mlog(n)n^2) computational steps. The cross-validation error can be estimated using a new procedure called 'one-fit grid search' which requires only one instead of n model generations. 
