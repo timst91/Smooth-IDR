@@ -57,7 +57,7 @@ requires $O(mlog(n)n^2) computational steps. The cross-validation error can be e
 The criterion is defined as
 
 $$\begin{equation*}
-    \mathrm{OF}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\Bar{h}_{-i}(x_i,y_i)},
+    \mathrm{OF}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\bar{h}_{-i}(x_i,y_i)},
 \end{equation*}$$
 
 
@@ -71,7 +71,7 @@ The second approach is a local bandwidth estimator which is obtained by minimizi
 \end{equation}$$ 
 
 
-The constant $c$ is unknown in general and has to be chosen a priori or by minimizing $\mathrm{OF}$ or $\mathrm{OF}.$
+The constant $c$ is unknown in general and has to be chosen a priori or by minimizing $\mathrm{OF}$ or $\mathrm{CV}.$
 
 It is thus advantageous, that the absolute difference $\max_{c \in [c_{\min}, c_{\max}]}|\mathrm{OF}(h_{c,n}) - \mathrm{CV}(h_{c,n})|$ converges in probability to zero, for $h_{c,n}=(\log(n)/n)^{1/9}c$ and  $0< c_{\min} \leq c_{\max} < \infty.$
 
