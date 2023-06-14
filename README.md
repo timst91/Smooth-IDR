@@ -14,16 +14,17 @@ For values of $x \in \mathcal{X},$ the IDR CDF at a threshold $y \in \mathbb{R}$
 $x_j <x<x_{j+1}.$ 
 The function $H(x,\cdot)$ is a piecewise continuous function with jumps at the unique observed values of $Y$ given by $\Tilde{y}_1,\dots,\Tilde{y}_m.$
 
-We obtain a smooth estimator of the conditional CDF using kernel-smoothing, i.e. we define the kernel-smoothed IDR CDF as 
+We obtain a smooth estimator of the conditional CDF using kernel-smoothing. We define the kernel-smoothed IDR CDF as 
 $\begin{equation}
         \Tilde{H}(x,y)=\int_\mathbb{R}H(x,t)K_h(y-t) \ dt,
     \end{equation}$
-where $\kappa$ is a valid kernel function and $h>0$ is the bandwidth.
+where $K_h(x)=\kappa(x/h)/h$ and $\kappa$ is a valid kernel function and $h>0$ is the bandwidth.
 
 Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write $\begin{equation}
     \Tilde{H}(x,y)=\sum_{j=1}^mH(x,\Tilde{y}_j)\int_{\Tilde{y}_j}^{\Tilde{y}_{j+1}}K_h(y-t) \ dt,
 \end{equation}$
 where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
 
+From the last equation, we 
 
   
