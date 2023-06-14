@@ -25,6 +25,17 @@ Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write $\begin{equ
 \end{equation}$
 where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
 
-From the last equation, we 
+From the last equation, we can infer on the condtional density of $Y|X=x$ by computing the derivative of the smooth IDR:
+$\begin{align}\label{eq: weighted kernell form of IDR density}
+    \Tilde{h}(x,y)&= \frac{\partial}{\partial y}\Tilde{H}(x,y)= \sum_{j=1}^mH(x,\Tilde{y}_j)(K_h(y-\Tilde{y}_j)-K_h(y-\Tilde{y}_{j+1})) \notag \\
+    &=\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_j)-\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_{j+1})\notag \\
+    &= \sum_{j=1}^mw_j(x)K_h(y-\Tilde{y}_j),
+\end{align}$
+where $w_j(x)=H(x,\Tilde{y}_j)-H(x,\Tilde{y}_{j-1}).$
+
+It can be shown under given assumptions, that the IDR conditional CDF and its smooth version are consistent estimators of the conditional CDF. Furthermore under additional regularity assumptions, also the conditional IDR density is a consistent estimator of the conditional density.
+
+
+
 
   
