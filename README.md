@@ -22,9 +22,11 @@ $$\begin{equation}
 where $K_h(x)=\kappa(x/h)/h$ and $\kappa$ is a valid kernel function and $h>0$ is the bandwidth.
 
 Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write 
+
 $$\begin{equation}
     \Tilde{H}(x,y)=\sum_{j=1}^mH(x,\Tilde{y}_j)\int_{\Tilde{y}_j}^{\Tilde{y}_{j+1}}K_h(y-t) \ dt,
 \end{equation}$$
+
 where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
 
 From the last equation, we can infer on the condtional density of $Y|X=x$ by computing the derivative of the smooth IDR:
