@@ -3,11 +3,12 @@ Extension of Isotonic Distributional Regression (https://github.com/AlexanderHen
 
 ## Introduction
 
-Isotonic distributional regression (IDR) aims at modeling the conditional CDF of a random variable $Y$ given $X$ under the assumption that $Y$ is in a monotonic relationship with $X.$ Formally speaking, this is equivalent to the conditional CDF $F_x(y)$ defined for $(x,y) \in \mathcal{X}\times \mathbb{R}$ is non-increasing in $x$ for any $y \in \mathbb{R}.$
-When the observations of $X$ are given by $x_1<\dots<x_n$ and the corresponding observations of $Y$ by $y_1,\dots,y_n,$ the IDR conditional CDF of $Y$ at a threshold $y \in \mathbb{R}$ given $x_i$ is defined as 
+Isotonic distributional regression (IDR) aims at modeling the conditional CDF of a random variable $Y$ given $X$ under the assumption that $Y$ is in a monotonic relationship with $X.$ Formally, we assume the conditional CDF $F_x(y)$ defined for $(x,y) \in \mathcal{X}\times \mathbb{R}$ to be non-increasing in $x$ for any $y \in \mathbb{R}.$
+The IDR estimator is obtained by minimizing the Continuous Ranked Probability Score (CRPS).
+When the observations of $X$ are given by $x_1<\dots<x_n$ and the corresponding observations of $Y$ by $y_1,\dots,y_n,$ the IDR conditional CDF of $Y$ at a threshold $y \in \mathbb{R}$ given $x_i$ is given by
 
 $\begin{equation}\label{eq:IDR}
-    H(X_i,y)=\min_{\substack{j:j\leq i}} \max_{\substack{h:h\geq i}} \frac{1}{h-j+1}\sum_{k=j}^h \mathds{1}_{[Y_k\leq y]}.
+    H(x_i,y)=\min_{\substack{j:j\leq i}} \max_{\substack{h:h\geq i}} \frac{1}{h-j+1}\sum_{k=j}^h \mathds{1}_{[Y_k\leq y]}.
 \end{equation}$
 
 For values of $x \in \mathcal{X},$ the IDR CDF at a threshold $y \in \mathbb{R}$ is defined as a linear interpolation between $H(x_j,y)$ and $H(x_{j+1},y),$ where $1\leq j\leq n$ is such that 
@@ -26,7 +27,7 @@ Since $H(x,y)$ is discrete with jumps at $\Tilde{y}_i,$ we can write $\begin{equ
 where we define the boundary cases $\tilde{y}_{m+1} = \infty$ and $\tilde{y}_0 = -\infty.$
 
 From the last equation, we can infer on the condtional density of $Y|X=x$ by computing the derivative of the smooth IDR:
-$\begin{align}\label{eq: weighted kernell form of IDR density}
+$\begin{align}
     \Tilde{h}(x,y)&= \frac{\partial}{\partial y}\Tilde{H}(x,y)= \sum_{j=1}^mH(x,\Tilde{y}_j)(K_h(y-\Tilde{y}_j)-K_h(y-\Tilde{y}_{j+1})) \notag \\
     &=\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_j)-\sum_{j=1}^mH(x,\Tilde{y}_j)K_h(y-\Tilde{y}_{j+1})\notag \\
     &= \sum_{j=1}^mw_j(x)K_h(y-\Tilde{y}_j),
@@ -35,7 +36,16 @@ where $w_j(x)=H(x,\Tilde{y}_j)-H(x,\Tilde{y}_{j-1}).$
 
 It can be shown under given assumptions, that the IDR conditional CDF and its smooth version are consistent estimators of the conditional CDF. Furthermore under additional regularity assumptions, also the conditional IDR density is a consistent estimator of the conditional density.
 
-##
+## Performance assessment and bandwidth selection
+
+The smooth IDR CDF and density require tuning of the bandwith $h,$ for which we provide two possible approaches.
+One possible approach is to compute the cross-validation error for different values of $h$ and choose the value that minimizes the score. Using the $\mathrm{logS}$ scoring rule, the leave-one-out cross-validation error is defined by 
+$\begin{equation*}
+    \mathrm{CV}(h):=-\frac{1}{n}\sum_{i=1}^n \log{\Tilde{h}_{x_{-i}}(x_i,y_i)},
+\end{equation*}.$ 
+The IDR CDF $H$ can be efficiently computed with the PAV algorithm in $O(log(n)n)$ time. However, computing $\mathrm{CV}(h)$
+requires $O(mlog(n)n^2) computational steps. The cross-validation error can be estimated using the 
+
 
 
 
