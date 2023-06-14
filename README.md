@@ -11,7 +11,7 @@ $$\begin{equation}
     H(x_i,y)=\min_{\substack{j:j\leq i}} \max_{\substack{h:h\geq i}} \frac{1}{h-j+1}\sum_{k=j}^h \mathbb{1}_{[Y_k\leq y]}.
 \end{equation}$$
 
-For values of \$ x \in \mathcal{X},\$ the IDR CDF at a threshold $y \in \mathbb{R}$ is defined as a linear interpolation between $H(x_j,y)$ and $H(x_{j+1},y),$ where $1\leq j\leq n$ is such that 
+For values of $ x \in \mathcal{X},$ the IDR CDF at a threshold $y \in \mathbb{R}$ is defined as a linear interpolation between $H(x_j,y)$ and $H(x_{j+1},y),$ where $1\leq j\leq n$ is such that 
 \$x_j <x<x_{j+1}.\$ 
 The function $H(x,\cdot)$ is a piecewise continuous function with jumps at the unique observed values of $Y$ given by $\Tilde{y}_1,\dots,\Tilde{y}_m.$
 
