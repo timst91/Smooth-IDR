@@ -99,7 +99,7 @@ To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choo
 
 Another experiment conducted is the analysis of the $\mathrm{MSE}$ obtained by estimating the smooth IDR conditional CDF of $n$ samples of
 ```math
-Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{\max{X,2},8}),
+Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},8)}),
 ````
 where $X\sim \textup{Uniform}(0,10).$ The experiment performs a grid search over values of $\nu,$ $h$ and $c$ minimizing the $\mathrm{OF}$ criterion. We see that the smooth IDR CDF with optimal global bandwidth approximates the true conditional CDF better for smaller sample sizes, while for sample sizes > 1000, the optimal local bandwidth performs better in terms of the $\mathrm{MSE}.$
 
