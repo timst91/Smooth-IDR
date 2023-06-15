@@ -84,6 +84,14 @@ The constant $c$ is unknown in general and has to be chosen a priori or by minim
 
 It is thus advantageous, that the absolute difference $\max_{c \in [c_{\min}, c_{\max}]}|\mathrm{OF}(h_{c,n}) - \mathrm{CV}(h_{c,n})|$ converges in probability to zero, for $h_{c,n}=(\log(n)/n)^{1/9}c$ and  $0< c_{\min} \leq c_{\max} < \infty.$
 
+## Experiments
+
+To visualize the advantage of $\mathrm{OF}(h),$ we simulate for different sample sizes the random variable 
+```math
+Y|X\sim \textup{Gamma}(\textup{shape}=X,\textup{scale}=1/\sqrt{X}).
+````
+To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choose for every $n$ the bandwidth $h_n= (\log{(n)}/n)^{1/9}.$ When comparing $\mathrm{CV}(h_n)$ and $\mathrm{OF}(h_n),$ we observe that $\mathrm{OF}$ closely matches $\mathrm{CV}$ while being much faster to compute.
+
 
 
 
