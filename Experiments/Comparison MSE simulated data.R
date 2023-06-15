@@ -1,51 +1,19 @@
 y_test=seq(0,60,l=100)
 
-N=seq(100,5000,l=100)
+N=seq(100,4000,l=20)
 MSE=c()
 MSE_opt=c()
 x_test=5
 real_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
 nsim=5
-for (n in N){
-  mse=0
-  mse_opt=0
-  for (j in 1:nsim){
-    y=c()
-    X=sort(runif(n,0,10))
-    
-    for (x in X) {y=append(y,rgamma(1,shape=sqrt(x),scale=min(max(x,2),8)))}
-    
-    idr_fit=idr(y,data.frame(X))
-    pred_idr_basic=predict(idr_fit,data=data.frame(X=5))
-    y_test=pred_idr_basic[[1]]$points
-    real_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
-    
-    mse=mse+1/nsim*mean((pred_idr_basic[[1]]$cdf-real_cdf)^2)
 
-  }
-  #lines(y_test,smooth.idr.cdf)
-  print(mse)
-  MSE=append(MSE,mse)
-  
-}
-plot(N,MSE,type='l',col=2)
-lines(N,MSE_opt)
-
-y_test=seq(0,60,l=100)
-
-N=append(N,seq(1000,3000,l=10))
-N1=seq(1000,4000,l=10)
-N2=seq(5000,10000,l=4)
-#MSE=c()
-#MSE_opt=c()
-x_test=5
-real_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
-nsim=3
 H=seq(0.1,2,l=10)
 Nu=c(seq(2.01,10,l=10),Inf)
+
 C=c(0.25,0.5,1,2,4)
 grid=expand.grid(Nu,C)
 grid2=expand.grid(Nu,H)
+
 for (n in N2){
   mse=0
   mse_opt=0
@@ -97,8 +65,8 @@ for (n in N2){
   MSE_opt=append(MSE_opt,mse_opt)
   
 }
-N=append(N,N2)
-plot(N,MSE,type='l',col=2)
-lines(N,MSE_opt)
 
+plot(N,MSE,type='l')
+lines(N,MSE_opt,col=2)
+legend("topright",legend=c("local bw","global bw"),col=c(2,1),lty=1)
 
