@@ -41,7 +41,10 @@ $$\begin{align} \widetilde{h}(x,y)&= \frac{\partial}{\partial y}\widetilde{H}(x,
     &= \sum_{j=1}^mw_j(x)K_h(y-\widetilde{y}_j),
 \end{align}$$
 ````
-where  $w_j(x) = H(x,\widetilde{y}_j)-H(x\widetilde{y}_{j-1})$
+where
+```math 
+w_j(x) = H(x,\widetilde{y}_j) - H(\widetilde{y}_{j-1}).
+````
 
 It can be shown under given assumptions, that the IDR conditional CDF and its smooth version are consistent estimators of the conditional CDF. Furthermore under additional regularity assumptions, also the conditional IDR density is a consistent estimator of the conditional density.
 
