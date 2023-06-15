@@ -96,5 +96,16 @@ To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choo
 ![comparison of cv and of](cv_vs_of_time_3000.png)
 
 
+## References 
+
+Walz, E. M., Henzi, A., Ziegel, J., & Gneiting, T. (2022). Easy Uncertainty Quantification (EasyUQ): Generating predictive distributions from single-valued model output. arXiv preprint arXiv:2212.08376. 
+https://doi.org/10.48550/arXiv.2212.08376
+
+
+Henzi, A., Ziegel, J. F., & Gneiting, T. (2021). Isotonic distributional regression. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(5), 963-993. https://doi.org/10.1111/rssb.12450
+
+
+Alexandre Mösching. Lutz Dümbgen. Monotone least squares and isotonic quantiles. Electron. J. Statist. 14 (1) 24 - 49, 2020. https://doi.org/10.1214/19-EJS1659
+
 
   
