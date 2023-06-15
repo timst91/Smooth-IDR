@@ -99,7 +99,8 @@ To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choo
 
 
 
-![Comparison of MSE](Experiments/MSE comparison.png)
+![Comparison of MSE](Experiments/MSE%20comparison.png)
+
 
 
 
