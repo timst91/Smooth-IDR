@@ -1,6 +1,13 @@
 library(isodistrreg)
 library(progress)
 
+# In this file, we implement the smooth IDR CDF and density with automated local bandwidth as intruduced in the summary. 
+# this requires selection of initial values of nu and h and c. These can be chosen a priori or by minimizing OF. 
+# Introducing a local bandwidth has as consequence, that the resulting density does no longer integrate to one and that the resulting CDF
+# is no longer guarenteed to be increasing. For the latter, we provide an adaptation that corrects this behaviour. For the former,
+# it could be enough to normalize by dividing the estimates of the density with the sum of all estimated densities.
+#
+
 smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
                               h_init=(log(length(x))/length(x))^(1/10),
                               nu=2.5,nu_init=nu,progress=FALSE,
