@@ -96,6 +96,21 @@ To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choo
 ![comparison of cv and of](cv_vs_of_time_3000.png)
 
 
+
+
+
+![Comparison of MSE](Experiments/MSE comparison.png)
+
+
+
+
+
+
+
+
+
+
+
 ## References 
 
 Walz, E. M., Henzi, A., Ziegel, J., & Gneiting, T. (2022). Easy Uncertainty Quantification (EasyUQ): Generating predictive distributions from single-valued model output. arXiv preprint arXiv:2212.08376. 
