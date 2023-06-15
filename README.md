@@ -101,7 +101,7 @@ Another experiment conducted is the analysis of the $\mathrm{MSE}$ obtained by e
 ```math
 Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},8)}),
 ````
-where $X\sim \textup{Uniform}(0,10).$ The goal of the experiment is to compare the predictive distribution of $Y|X=5$ obtained by smooth IDR using once a global and a local bandwith. The values of $\nu,$ $h$ and $c$ are chosen via a grid search to minimize the $\mathrm{OF}$ criterion. We see that the smooth IDR CDF with optimal global bandwidth approximates the true conditional CDF better for smaller sample sizes, while for sample sizes > 1000, the optimal local bandwidth performs better in terms of the $\mathrm{MSE}.$
+where $X\sim \textup{Uniform}(0,10).$ The goal of the experiment is to compare the predictive distribution of $Y|X=5$ obtained by smooth IDR using once a global and a local bandwith. The values of $\nu,$ $h$ and $c$ are chosen via a grid search to minimize the $\mathrm{OF}$ criterion. We see that the smooth IDR CDF with optimal global bandwidth approximates the true conditional CDF better for smaller sample sizes, while for sample sizes > 1000, the optimal local bandwidth predictive distribution tends to be more accurate in terms of the $\mathrm{MSE}.$
 
 ![Comparison of MSE](Experiments/MSE%20comparison.png)
 
