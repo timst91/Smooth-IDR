@@ -96,4 +96,5 @@ To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choo
 ![comparison of cv and of](cv_vs_of_time_3000.png)
 
 
+
   
