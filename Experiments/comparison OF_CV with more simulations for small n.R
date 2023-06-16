@@ -101,7 +101,7 @@ of=c()
 of_time=c()
 nu=2.5
 
-pb=progress_bar$new(total=length(n)*sum(Nsim))
+pb=progress_bar$new(total=sum(Nsim))
 for (j in 1:length(n)){
   N=n[j]
   
