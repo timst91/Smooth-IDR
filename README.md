@@ -84,6 +84,21 @@ The constant $c$ is unknown in general and has to be chosen a priori or by minim
 
 It is thus advantageous, that the absolute difference $\max_{c \in [c_{\min}, c_{\max}]}|\mathrm{OF}(h_{c,n}) - \mathrm{CV}(h_{c,n})|$ converges in probability to zero, for $h_{c,n}=(\log(n)/n)^{1/9}c$ and  $0< c_{\min} \leq c_{\max} < \infty.$
 
+## Implementation
+
+To visualize the concept, we compute the IDR and the smooth IDR CDF`s for 100 and 200 samples of 
+```math
+Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},8)}),
+````
+with $X\sim \textup{Uniform}(0,10).$ We estimate the predictive distribution of $Y|X=5,$ where for the smooth IDR CDF's the parameters for the local and global bandwidth are selected by a grid search to mminimize the $\mathrm{OF}$ criterion.
+
+For smaller sample sizes, it is possible for the smooth IDR with local bandwidth to violate monotonicity. In this case, we incorporate the optional argument ```increasing = TRUE´´´, which informally corrects this behaviour. Simulation experiments with larger sample sizes however suggest that this correction is not neccessary, as seen for example in the second plot.
+![implementation sample size 100](visualization%20cdfs%20n=100.png)
+
+![implementation sample size 200](Visualization%20cdfs%20n=200.png)
+
+Generally for moderate sample sizes, kernel estimation techniques with local bandwidth procedures tend to be less stable than with a global bandwidth. As we see in the plots, this is also the case for smooth IDR. On the other hand, in an experiment below that analyses the $\mathrm{MSE}$ for different sample sizes, we see that the smooth IDR with local bandwidth overcomes the version incorporating a global bandwith after a sample size around $n=1000$.
+
 ## Experiments
 
 To visualize the advantage of $\mathrm{OF}(h),$ we simulate for different sample sizes the random variable 
