@@ -25,7 +25,7 @@ grid=expand.grid(Nu,C)
 
 grid2=expand.grid(Nu,H)
 
-for (n in N2){
+for (n in N){
   mse=0
   mse_opt=0
   for (j in 1:nsim){
