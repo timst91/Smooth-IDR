@@ -73,9 +73,9 @@ smooth_CDF_local_uncorrected=smooth_IDR_CDF_h_opt(y,X,h_init=h_opt_init,nu_init=
 
 plot(pred)
 lines(y_test,smooth_CDF,col=2)
-lines(y_test,smooth_CDF_local,col=3)
-lines(y_test,smooth_CDF_local_uncorrected,col=3,lty=2)
-lines(y_test,true_cdf,lty=2)
+lines(y_test,smooth_CDF_local,col=1)
+lines(y_test,smooth_CDF_local_uncorrected,col=1,lty=2)
+lines(y_test,true_cdf,lty=2,col="darkgreen")
 
 Legend1= substitute(paste("smooth IDR with global bw, ", h[opt], " = ", H, " , ", nu[opt]," = ",nU)
                     , list(H = h_opt_init, nU=nu_opt_init))
@@ -88,7 +88,10 @@ Legend2=substitute(paste("smooth IDR with local bw, ", c[opt], " = ", C,
 legend("right",c("IDR", Legend1, Legend2,
                  "smooth IDR with local bw, uncorrected for monotonicity",
                       expression(F[5](y))),
-       col=c("blue",2,3,3,1),lty=c(1,1,1,2,2))
+       col=c("blue",2,1,1,"darkgreen"),lty=c(1,1,1,2,2))
+
+
+
 
 
 
