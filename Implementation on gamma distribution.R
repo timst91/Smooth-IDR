@@ -1,5 +1,5 @@
 y=c()
-n=500
+n=100
 X=sort(runif(n,0,10))
 
 for (x in X) {y=append(y,rgamma(1,shape=sqrt(x),scale=min(max(x,2),8)))}
@@ -12,8 +12,8 @@ idr_fit=idr(y,data.frame(X))
 
 pred=predict(idr_fit,data=data.frame(X=x_test))
 
-y_test=pred[[1]]$points
-
+#y_test=pred[[1]]$points
+y_test=seq(-1,37,l=500)
 
 true_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
 
@@ -62,24 +62,33 @@ nu_opt=as.numeric(grid[which.min(of_c_nu),])[1]
 c_opt=as.numeric(grid[which.min(of_c_nu),])[2]
 pb$terminate()
 
-smooth_CDF=smooth_IDR_CDF(y,X,h=h_init,nu=nu_init,y_test=y_test,x_test=x_test)
+smooth_CDF=smooth_IDR_CDF(y,X,h=h_opt_init,nu=nu_opt_init,y_test=y_test,x_test=x_test)
 smooth_CDF_local=smooth_IDR_CDF_h_opt(y,X,h_init=h_opt_init,nu_init=nu_opt_init,
                                       c=c_opt,nu=nu_opt,
                                       y_test=y_test,x_test=x_test)
 smooth_CDF_local_uncorrected=smooth_IDR_CDF_h_opt(y,X,h_init=h_opt_init,nu_init=nu_opt_init,
                                                   c=c_opt,nu=nu_opt,
-                                                  y_test=y_test,x_test=x_test,
+                                                 y_test=y_test,x_test=x_test,
                                                   increasing = FALSE)
 
 plot(pred)
 lines(y_test,smooth_CDF,col=2)
 lines(y_test,smooth_CDF_local,col=3)
 lines(y_test,smooth_CDF_local_uncorrected,col=3,lty=2)
+lines(y_test,true_cdf,lty=2)
 
-legend("bottomleft",c("IDR", "smooth IDR global h", "smooth IDR local h",
-                      "smooth IDR local h, uncorrected"),
-       col=c("blue",2,3,3),lty=c(1,1,1,2))
+Legend1= substitute(paste("smooth IDR with global bw, ", h[opt], " = ", H, " , ", nu[opt]," = ",nU)
+                    , list(H = h_opt_init, nU=nu_opt_init))
 
+Legend2=substitute(paste("smooth IDR with local bw, ", c[opt], " = ", C,
+                         " , ", nu[opt]," = ",nU), list(C = c_opt, nU=nu_opt))
+
+
+
+legend("right",c("IDR", Legend1, Legend2,
+                 "smooth IDR with local bw, uncorrected for monotonicity",
+                      expression(F[5](y))),
+       col=c("blue",2,3,3,1),lty=c(1,1,1,2,2))
 
 
 
