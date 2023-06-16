@@ -33,7 +33,7 @@ for (i in 1:nrow(grid2)){
   of=OF_h(y,X,h,nu)$logS
   of_h_nu=append(of_h_nu,
                  of)
-  print(of)
+  #print(of)
   pb$tick()
 }
 
@@ -54,7 +54,7 @@ for (i in 1:nrow(grid)){
   nu=as.numeric(grid[i,])[1]
   c=as.numeric(grid[i,])[2]
   of_c_nu=append(of_c_nu,
-                 OF_c(y,X,c,nu,nu_init=nu_opt_init,h_init=h_opt_init)$logS)
+                 OF_c(y,X,c,nu,nu_init=nu_opt_init,h_init=h_opt_init))
   pb$tick()
 }
 
