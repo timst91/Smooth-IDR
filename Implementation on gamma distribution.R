@@ -44,7 +44,7 @@ pb$terminate()
 
 c=seq(0.25,10,l=30)
 
-grid=expand.grid(Nu,c)
+grid=expand.grid(NU,c)
 
 of_c_nu=c()
 pb <- progress_bar$new(total=nrow(grid))
