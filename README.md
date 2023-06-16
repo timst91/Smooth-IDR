@@ -92,8 +92,10 @@ Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},
 ````
 with $X\sim \textup{Uniform}(0,10).$ We estimate the predictive distribution of $Y|X=5,$ where for the smooth IDR CDF's the parameters for the local and global bandwidth are selected by a grid search to mminimize the $\mathrm{OF}$ criterion.
 
-For smaller sample sizes, it is possible for the smooth IDR with local bandwidth to violate monotonicity. In this case, we incorporate the optional argument ```increasing = TRUE´´´, which informally corrects this behaviour. Simulation experiments with larger sample sizes however suggest that this correction is not neccessary, as seen for example in the second plot.
+
 ![implementation sample size 100](visualization%20cdfs%20n=100.png)
+
+For smaller sample sizes, it is possible for local bandwidth smooth IDR to violate monotonicity. In this case, we incorporate the optional argument ```increasing = TRUE```, which informally corrects this behaviour. Simulation experiments with larger sample sizes however suggest that this correction is not neccessary, as seen below for the case $n=200.$
 
 ![implementation sample size 200](Visualization%20cdfs%20n=200.png)
 
