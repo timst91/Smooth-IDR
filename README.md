@@ -5,7 +5,7 @@ Extension of Isotonic Distributional Regression (https://github.com/AlexanderHen
 
 Isotonic distributional regression (IDR) aims at modeling the conditional CDF of a random variable $Y$ given $X$ under the assumption that $Y$ is in a monotonic relationship with $X.$ Formally, we assume the conditional CDF $F_x(y)$ defined for $(x,y) \in \mathcal{X}\times \mathbb{R}$ to be non-increasing in $x$ for any $y \in \mathbb{R}.$
 The IDR estimator is obtained by minimizing the Continuous Ranked Probability Score (CRPS).
-When the observations of $X$ are given by $x_1 < \dots < x_n$ and the corresponding observations of $Y$ by $y_1,\dots,y_n,$ the IDR conditional CDF of $Y$ at a threshold $y \in \mathbb{R}$ given $x_i$ is given by
+When the observations of $X$ are given by $x_1 < \dots < x_n$ and the corresponding observations of $Y$ by $y_1,\dots,y_n,$ the IDR conditional CDF of $Y|X=x_i$ at a threshold $y \in \mathbb{R}$ is given by
 
 $$\begin{equation}
     H(x_i,y)=\min_{\substack{j:j\leq i}} \max_{\substack{h:h\geq i}} \frac{1}{h-j+1}\sum_{k=j}^h \mathbb{1}_{[Y_k\leq y]}.
