@@ -176,7 +176,8 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
   
 } 
 
-smooth_IDR_density_h_opt=function(y,x,c=1,h_init=0.5,nu=2.5,y_test=y,x_test){
+smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
+                                  c=1,h_init=0.5,nu=2.5,normalize=FALSE){
   n=length(x)
   x=sort(x)
   fit_idr=idr(y,data.frame(x))
@@ -253,7 +254,24 @@ smooth_IDR_density_h_opt=function(y,x,c=1,h_init=0.5,nu=2.5,y_test=y,x_test){
                              w%*%sapply(unique_order_y,function(u){K_h(Y-u,h_opt_Y)}
                                         
                              ))}
-  return(list(density=smooth_IDR_x_test,weights=w))
+  if(normalize){
+    integrand=function(s){
+      K2=sapply(sort(unique(y)),function(u){K_h_2(u-s,h_init)})
+      
+      second_der= w%*%K2
+      kappa0=K_h(0,1)
+      eps_n=(log(n)/n)^1/3
+      if(nu!=Inf){var_gamma=nu/(nu-2)}else{var_gamma=1}
+      
+      h_opt_Y=c*(4*kappa0*eps_n/(abs(second_der)*var_gamma))^(1/3)
+      return(w%*%sapply(unique_order_y,function(u){K_h(s-u,h_opt_Y)}))
+    }
+    range=range(y)+c(-100,100)
+    int=integrate(Vectorize(integrand),lower=range[1],upper=range[2])$value
+
+  }
+  return(list(density=ifelse(normalize,int,1)*smooth_IDR_x_test
+              ,weights=w,integral=ifelse(normalize,int,NA)))
   
 }
 
