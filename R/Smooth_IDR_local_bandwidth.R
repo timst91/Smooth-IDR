@@ -260,7 +260,7 @@ smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
     int=integrate(Vectorize(integrand),lower=range[1],upper=range[2])$value
 
   }
-  return(list(density=ifelse(normalize,int,1)*smooth_IDR_x_test
+  return(list(density=ifelse(normalize,1/int,1)*smooth_IDR_x_test
               ,weights=w,integral=ifelse(normalize,int,NA)))
   
 }
