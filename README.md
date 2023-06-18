@@ -112,7 +112,7 @@ Y|X\sim \textup{Gamma}(\textup{shape}=X,\textup{scale}=1/\sqrt{X}).
 To furthermore illustrate the consistent estimation of $\mathrm{CV}(h),$ we choose for every $n$ the bandwidth $h_n= (\log{(n)}/n)^{1/9}.$ When comparing the mean of $\mathrm{CV}(h_n)$ and $\mathrm{OF}(h_n)$ for 10 simulations per sample size, we observe that $\mathrm{OF}$ closely matches $\mathrm{CV}$ while being much faster to compute.
 
 
-![comparison of cv and of](cv_vs_of_time_3000.png)
+![comparison of cv and of](Experiments/of%20vs%20cv%20log%20n.png)
 
 
 
