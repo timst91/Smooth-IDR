@@ -80,7 +80,7 @@ Legend2=substitute(paste("IDR with local bw, ", c[opt], " = ", C,
 
 
 
-legend("topright",c("IDR", Legend1, Legend2,
+legend("topright",c( Legend1, Legend2,
                  expression(f[5](y))),
        col=c(2,1,"darkgreen"),lty=c(1,1,2))
 
