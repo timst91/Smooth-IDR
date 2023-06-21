@@ -26,8 +26,10 @@ lr=seq(0.001,0.01,l=10)
 batch_size=seq(50,300,l=10)
 grid2=expand.grid(lr,batch_size)
 epochs=40
-#pb=progress_bar$new(total=nsplits*nrow(grid))
+
 mean_test_logS=0
+
+pb=progress_bar$new(total=nsplits*nrow(grid)*nrow(grid2))
 
 for (split in 1:nsplits){
   ind=sample(1:nrow(data))
@@ -47,8 +49,7 @@ for (split in 1:nsplits){
   X_test=normalized_df[-c(train_ind,val_ind), ]
   y_test=y[-c(train_ind,val_ind)]
   
-  epochs <- 10
-  
+
   
   MSE=c()
   nuu=c()
@@ -85,9 +86,11 @@ for (split in 1:nsplits){
     # Evaluate the model on the test set
     MSE=append(MSE,unname(model %>% evaluate(
       x = as.matrix(X_val),
-      y = y_val
+      y = y_val,
+      verbose = 0
     )))
-    fitted=as.numeric( model %>% predict(as.matrix(X_train)))
+    fitted=as.numeric( model %>% predict(as.matrix(X_train),
+                                         verbose = 0))
     
     of_h_nu=c()
     #pb$tick()
@@ -100,7 +103,7 @@ for (split in 1:nsplits){
       of_h_nu=append(of_h_nu,
                      of)
       #print(of)
-      #pb$tick()
+      pb$tick()
     }
     
     nuu=append(nuu,as.numeric(grid[which.min(of_h_nu),])[1])
@@ -139,9 +142,11 @@ for (split in 1:nsplits){
   )
   
  
-  fitted=as.numeric(model %>% predict(as.matrix(X_train_val)))
+  fitted=as.numeric(model %>% predict(as.matrix(X_train_val),
+                                      verbose = 0))
  
-  predictions <- as.numeric(model %>% predict(as.matrix(X_test)))
+  predictions <- as.numeric(model %>% predict(as.matrix(X_test),
+                                              verbose = 0))
   
   test_logS=mean(apply(cbind(predictions,y_test),1, function(u){
     log(smooth_IDR_density(y_train_val,fitted,h=h_opt,nu=nu_opt,y_test=u[2],x_test=u[1]))}))
@@ -152,5 +157,6 @@ for (split in 1:nsplits){
   
 }
 
-#pb$terminate()
+pb$terminate()
 print(mean_test_logS)
+
