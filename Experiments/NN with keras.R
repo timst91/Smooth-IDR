@@ -1,4 +1,4 @@
-# Install the required packages
+
 #install.packages("keras")
 #install.packages("tidyverse")
 library(tensorflow)
@@ -6,12 +6,13 @@ library(MASS)
 library(keras)
 library(tidyverse)
 reticulate::use_python("C:\\Apps\\Anaconda3\\envs\\myenv\\python.exe")
-# Load the Boston Housing dataset from the MASS package
+
+
 data(Boston)
-df <- as.data.frame(Boston)
+df =as.data.frame(Boston)
 
 # Normalize the predictor variables
-normalized_df <- as.data.frame(lapply(df[, -14], scale))
+normalized_df = as.data.frame(lapply(df[, -14], scale))
 
 y= df$medv
 
@@ -33,11 +34,11 @@ pb=progress_bar$new(total=nsplits*nrow(grid)*nrow(grid2))
 
 for (split in 1:nsplits){
   ind=sample(1:nrow(data))
-  train_ind <- ind[1:floor(0.72 * nrow(data))]
+  train_ind = ind[1:floor(0.72 * nrow(data))]
   val_ind=ind[(floor(0.72 * nrow(data))+1):floor(0.9 * nrow(data))]
   test_ind=(1:nrow(data))[-c(train_ind,val_ind)]
   
-  X_train<- normalized_df[train_ind, ]
+  X_train= normalized_df[train_ind, ]
   y_train=y[train_ind]
   
   X_val=normalized_df[val_ind, ]
@@ -58,13 +59,13 @@ for (split in 1:nsplits){
     Lr=as.numeric(grid2[j,])[1]
     bs=as.numeric(grid2[j,])[2]
     
-    model <- keras_model_sequential()
+    model = keras_model_sequential()
     model %>%
       layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
       layer_dense(units = 50, activation = "relu") %>%
       layer_dense(units = 1, activation = "linear")
     
-    # Compile the model
+
    
     model %>% compile(
       loss = "mean_squared_error",
@@ -73,7 +74,7 @@ for (split in 1:nsplits){
     
     
     
-    # Train the model
+    # Train model
     model %>% fit(
       x = as.matrix(X_train),
       y = y_train,
@@ -83,7 +84,7 @@ for (split in 1:nsplits){
       validation_split = 0
     )
     
-    # Evaluate the model on the test set
+    
     MSE=append(MSE,unname(model %>% evaluate(
       x = as.matrix(X_val),
       y = y_val,
@@ -93,8 +94,7 @@ for (split in 1:nsplits){
                                          verbose = 0))
     
     of_h_nu=c()
-    #pb$tick()
-    
+     
     for (i in 1:nrow(grid)){
       
       nu=as.numeric(grid[i,])[1]
@@ -102,7 +102,6 @@ for (split in 1:nsplits){
       of=OF_h(y_train,fitted,h,nu)$logS
       of_h_nu=append(of_h_nu,
                      of)
-      #print(of)
       pb$tick()
     }
     
@@ -114,24 +113,19 @@ for (split in 1:nsplits){
   h_opt=hh[which.min(MSE)]
   nu_opt=nuu[which.min(MSE)]
   
-  model <- keras_model_sequential()
+  model = keras_model_sequential()
   model %>%
     layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
     layer_dense(units = 50, activation = "relu") %>%
     layer_dense(units = 1, activation = "linear")
   
-  # Compile the model
+  
   
   model %>% compile(
     loss = "mean_squared_error",
     optimizer = optimizer_sgd(learning_rate  = lr_opt)
   )
-  
-  # Set the batch size and number of epochs
-  
-  
-  
-  # Train the model
+
   model %>% fit(
     x = as.matrix(X_train_val),
     y = y_train_val,
@@ -145,7 +139,7 @@ for (split in 1:nsplits){
   fitted=as.numeric(model %>% predict(as.matrix(X_train_val),
                                       verbose = 0))
  
-  predictions <- as.numeric(model %>% predict(as.matrix(X_test),
+  predictions = as.numeric(model %>% predict(as.matrix(X_test),
                                               verbose = 0))
   
   test_logS=mean(apply(cbind(predictions,y_test),1, function(u){
