@@ -12,12 +12,11 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
                               h_init=(log(length(x))/length(x))^(1/10),
                               nu=2.5,nu_init=nu,progress=FALSE,
                               increasing=TRUE){
-  x=sort(unique(x))
+ 
   fit_idr=idr(y,data.frame(x))
   X=x
   unique_order_y=sort(unique(y))
-  
-  
+  x=sort(unique(x))
   n=length(x)
   if (nu!=Inf){
     K_h=function(u,h){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
@@ -169,11 +168,11 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
 
 smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
                                   c=1,h_init=0.5,nu=2.5,normalize=FALSE){
-  n=length(x)
-  x=sort(x)
+  
   fit_idr=idr(y,data.frame(x))
   unique_order_y=sort(unique(y))
-  
+  x=sort(unique(x))
+  n=length(x)
   if(nu!=Inf){
     K_h=function(u,h){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
     K_h_2=function(u,h){-1/h^3*(nu*pi)^(-0.5)*gamma((nu+1)/2)/gamma(nu/2)*(nu+1)/nu*(
