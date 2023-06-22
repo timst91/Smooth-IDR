@@ -1,3 +1,5 @@
+#Implementation of smooth IDR on Neural networks based on Algortihm1 of EasyUQ paper
+
 
 #install.packages("keras")
 #install.packages("tidyverse")
@@ -62,7 +64,7 @@ for (split in 1:nsplits){
     model = keras_model_sequential()
     model %>%
       layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
-      layer_dense(units = 50, activation = "relu") %>%
+     # layer_dense(units = 50, activation = "relu") %>%
       layer_dense(units = 1, activation = "linear")
     
 
@@ -92,7 +94,8 @@ for (split in 1:nsplits){
     )))
     fitted=as.numeric( model %>% predict(as.matrix(X_train),
                                          verbose = 0))
-    
+    #pred_val=as.numeric( model %>% predict(as.matrix(X_val), verbose = 0))
+   
     of_h_nu=c()
      
     for (i in 1:nrow(grid)){
@@ -100,6 +103,9 @@ for (split in 1:nsplits){
       nu=as.numeric(grid[i,])[1]
       h=as.numeric(grid[i,])[2]
       of=OF_h(y_train,fitted,h,nu)$logS
+     # of=-sum(apply(cbind(pred_val,y_val),1, function(u){
+     #   log(smooth_IDR_density(y_train,fitted,h=h,nu=nu,y_test=u[2],x_test=u[1]))}))
+    
       of_h_nu=append(of_h_nu,
                      of)
       pb$tick()
@@ -116,7 +122,7 @@ for (split in 1:nsplits){
   model = keras_model_sequential()
   model %>%
     layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
-    layer_dense(units = 50, activation = "relu") %>%
+    #layer_dense(units = 50, activation = "relu") %>%
     layer_dense(units = 1, activation = "linear")
   
   
