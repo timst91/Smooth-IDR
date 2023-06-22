@@ -21,7 +21,7 @@ y= df$medv
 nsplits=20
 
 NU=c(2.01,3,4,5,10,20,Inf)
-H=seq(0.01,5,l=10)
+H=seq(0.01,2,l=10)
 
 grid=expand.grid(NU,H)
 
