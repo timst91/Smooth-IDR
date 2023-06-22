@@ -1,4 +1,5 @@
-#Implementation of smooth IDR on Neural networks based on Algortihm1 of EasyUQ paper
+# Implementation of smooth IDR on Neural networks based on Algortihm 1 of EasyUQ paper,
+# using a grid search based on OF to choose h and nu. Faster, but with 50% higher mean logS
 
 
 #install.packages("keras")
