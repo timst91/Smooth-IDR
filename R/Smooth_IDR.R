@@ -101,12 +101,11 @@ smooth_IDR_CDF=function(y,x,h=3*(log(length(x))/length(x))^(1/9),nu=2.5,y_test=y
 }
 
 smooth_IDR_density=function(y,x,h=(log(length(x))/length(x))^(1/9),nu=2.5,y_test=y,x_test){
-  x=sort(unique(x))
-  n=length(x)
-  
+
   fit_idr=idr(y,data.frame(x))
   unique_order_y=sort(unique(y))
-  
+  x=sort(unique(x))
+  n=length(x)
   if (nu!=Inf){
     K_h=function(u){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
   }
