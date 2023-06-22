@@ -166,21 +166,31 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
   
 } 
 
+
+
 smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
-                                  c=1,h_init=0.5,nu=2.5,normalize=FALSE){
-  
+                                  c=1,h_init=0.5,nu=2.5,
+                                  nu_init=nu,normalize=FALSE){
   fit_idr=idr(y,data.frame(x))
-  unique_order_y=sort(unique(y))
+  n=length(unique(x))
   x=sort(unique(x))
-  n=length(x)
+  
+  unique_order_y=sort(unique(y))
+  
   if(nu!=Inf){
     K_h=function(u,h){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
-    K_h_2=function(u,h){-1/h^3*(nu*pi)^(-0.5)*gamma((nu+1)/2)/gamma(nu/2)*(nu+1)/nu*(
-         (1+(u/h)^2/nu)^(-(nu+3)/2)-(nu+3)/nu*(u/h)^2*(1+(u/h)^2/nu)^(-(nu+5)/2))}
     }else{
     K_h=function(u,h){1/h*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)}
-    K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)*(u^2/h^2-1)}
+   }
+  
+  if(nu_init!=Inf){
+     K_h_2=function(u,h){-1/h^3*(nu_init*pi)^(-0.5)*gamma((nu_init+1)/2)/gamma(nu_init/2)*(nu_init+1)/nu_init*(
+      (1+(u/h)^2/nu_init)^(-(nu_init+3)/2)-(nu_init+3)/nu_init*(u/h)^2*(1+(u/h)^2/nu_init)^(-(nu_init+5)/2))}
+  }else{
+     K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)*(u^2/h^2-1)}
   }
+  
+  
   #if(nu_init!=Inf){
   #  K_h_2=function(u,h){-1/h^3*(nu_init*pi)^(-0.5)*gamma((nu_init+1)/2)/gamma(nu_init/2)*(nu_init+1)/nu_init*(
   #    (1+(u/h)^2/nu_init)^(-(nu_init+3)/2)-(nu_init+3)/nu_init*(u/h)^2*(1+(u/h)^2/nu_init)^(-(nu_init+5)/2))}
@@ -241,7 +251,8 @@ smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
     h_opt_Y=c*(4*kappa0*eps_n/(abs(second_der)*var_gamma))^(1/3)
     
     smooth_IDR_x_test=append(smooth_IDR_x_test,
-                             w%*%sapply(unique_order_y,function(u){K_h(Y-u,h_opt_Y)}
+                             w%*%sapply(unique_order_y,
+                                        function(u){K_h(Y-u,h_opt_Y)}
                                         
                              ))}
   if(normalize){
@@ -258,10 +269,9 @@ smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
     }
     range=range(y)+c(-100,100)
     int=integrate(Vectorize(integrand),lower=range[1],upper=range[2])$value
-
+    
   }
   return(list(density=ifelse(normalize,1/int,1)*smooth_IDR_x_test
               ,weights=w,integral=ifelse(normalize,int,NA)))
   
 }
-
