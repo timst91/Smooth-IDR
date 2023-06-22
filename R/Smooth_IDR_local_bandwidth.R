@@ -12,10 +12,11 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
                               h_init=(log(length(x))/length(x))^(1/10),
                               nu=2.5,nu_init=nu,progress=FALSE,
                               increasing=TRUE){
+  x=sort(unique(x))
   fit_idr=idr(y,data.frame(x))
   X=x
   unique_order_y=sort(unique(y))
-  x=sort(unique(x))
+  
   
   n=length(x)
   if (nu!=Inf){
