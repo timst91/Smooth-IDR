@@ -101,8 +101,9 @@ smooth_IDR_CDF=function(y,x,h=3*(log(length(x))/length(x))^(1/9),nu=2.5,y_test=y
 }
 
 smooth_IDR_density=function(y,x,h=(log(length(x))/length(x))^(1/9),nu=2.5,y_test=y,x_test){
+  x=sort(unique(x))
   n=length(x)
-  x=sort(x)
+  
   fit_idr=idr(y,data.frame(x))
   unique_order_y=sort(unique(y))
   
