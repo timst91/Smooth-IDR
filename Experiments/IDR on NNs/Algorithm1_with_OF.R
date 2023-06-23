@@ -32,9 +32,9 @@ grid2=expand.grid(lr,batch_size)
 epochs=40
 
 mean_test_logS=0
-
-pb=progress_bar$new(total=nsplits*nrow(grid)*nrow(grid2))
-
+total_steps=nsplits*nrow(grid)*nrow(grid2)
+pb=progress_bar$new(total=total_steps)
+step=0
 for (split in 1:nsplits){
   ind=sample(1:nrow(data))
   train_ind = ind[1:floor(0.72 * nrow(data))]
@@ -73,6 +73,11 @@ for (split in 1:nsplits){
     model %>% compile(
       loss = "mean_squared_error",
       optimizer = optimizer_sgd(learning_rate  = Lr)
+
+   # in case of M1/M2 chip:   
+   #   optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = Lr)
+   
+    
     )
     
     
@@ -110,6 +115,8 @@ for (split in 1:nsplits){
       of_h_nu=append(of_h_nu,
                      of)
       pb$tick()
+      step=step+1
+      if(step%%200==0){print(paste(step," / ", total_steps))}
     }
     
     nuu=append(nuu,as.numeric(grid[which.min(of_h_nu),])[1])
@@ -131,6 +138,10 @@ for (split in 1:nsplits){
   model %>% compile(
     loss = "mean_squared_error",
     optimizer = optimizer_sgd(learning_rate  = lr_opt)
+
+     # in case of M1/M2 chip:   
+   # optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = lr_opt)
+  
   )
 
   model %>% fit(
