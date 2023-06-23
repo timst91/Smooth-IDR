@@ -172,4 +172,4 @@ for (split in 1:nsplits){
 
 pb$terminate()
 cat(paste('mean test logS:', mean_test_logS,"| ",
-'time elapsed:',unname(time$toc)))
+ 'time elapsed:',unname(time$toc)))
