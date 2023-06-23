@@ -110,6 +110,10 @@ for (split in 1:nsplits){
       of_c_nu=append(of_c_nu,
                      ofc)
       pb$tick()
+      step=step+1
+     
+      if(step%%100==0){
+        print(paste(step," / ", total))}
     }
     
     nuu=append(nuu,as.numeric(grid[which.min(of_c_nu),])[1])
