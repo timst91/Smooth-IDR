@@ -1,5 +1,5 @@
 # Evalutation of performance of smooth IDR on Boston Housing, using the original algorithm 1. 
-#The performance is better than using OF as metric to choose h and nu, but considerably slower.
+# The performance is slightly better than using OF as metric to choose h and nu, but considerably slower.
 
 
 
