@@ -165,12 +165,12 @@ for (split in 1:nsplits){
   
   
   mean_test_logS=mean_test_logS-1/nsplits*test_logS
-  time=toc(quiet=TRUE)
   print(test_logS)
   
   
 }
 
+time=toc(quiet=TRUE)
 pb$terminate()
 cat(paste('mean test logS:', mean_test_logS,"| ",
           ' time elapsed:',unname(time$toc)))
