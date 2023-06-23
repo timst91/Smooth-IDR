@@ -6,7 +6,7 @@
 #install.packages("keras")
 #install.packages("tidyverse")
 
-
+library(tictoc)
 library(tensorflow)
 library(MASS)
 library(keras)
@@ -39,7 +39,7 @@ mean_test_logS=0
 total_steps=nsplits*nrow(grid)*nrow(grid2)
 pb=progress_bar$new(total=total_steps)
 step=0
-
+tic()
 for (split in 1:nsplits){
   ind=sample(1:nrow(data))
   train_ind = ind[1:floor(0.72 * nrow(data))]
@@ -165,9 +165,11 @@ for (split in 1:nsplits){
   
   
   mean_test_logS=mean_test_logS-1/nsplits*test_logS
+  time=toc()
   print(test_logS)
   
 }
 
 pb$terminate()
-print(mean_test_logS)
+cat(paste('mean test logS:', mean_test_logS,"| ",
+'time elapsed:',unname(time$toc)))
