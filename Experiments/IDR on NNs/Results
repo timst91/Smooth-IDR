@@ -1,0 +1,24 @@
+RESULTS (mean test logS, time)
+
+Results for alg1 with OF:
+ -40 epochs: 2.5774, 
+ -400 epochs: 2.9866, 75104.2
+ -4000 epochs 2L: 
+
+
+Results for alg1 original:
+ -40 epochs:  
+ -400 epochs:  
+ -4000 epochs 2L: 
+
+
+Results for alg1 OF local:
+ -40 epochs:  
+ -400 epochs:  
+ -4000 epochs 2L: 
+
+
+Results for alg1 OF local normalized:
+ -40 epochs:  
+ -400 epochs:  
+ -4000 epochs 2L: 
