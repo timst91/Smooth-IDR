@@ -3,7 +3,7 @@ RESULTS (mean test logS, time)
 Results for alg1 with OF:
  -40 epochs: 2.5774, 
  -400 epochs: 2.9866, 75104.2
- -4000 epochs 2L: 
+ -4000 epochs 2L: 10.5440084632401 |  time elapsed: 236409.717
 
 
 Results for alg1 original:
@@ -14,7 +14,7 @@ Results for alg1 original:
 
 Results for alg1 OF local:
  -40 epochs: 2.400061  
- -400 epochs:  
+ -400 epochs:  2.40717318948211 |   time elapsed: 233409.114> 
  -4000 epochs 2L: 
 
 
