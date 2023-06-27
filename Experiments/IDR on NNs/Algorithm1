@@ -20,7 +20,7 @@ reticulate::use_python("/opt/anaconda3/envs/myenv/bin/python")
 
 num_cores_outer=4
 num_cores_inner=2
-
+progress=ifelse(num_cores_outer==1,TRUE, FALSE)
 
 registerDoParallel(cores = num_cores_outer)
 
@@ -46,7 +46,7 @@ epochs=40
 
 mean_test_logS=0
 total_steps=nsplits*nrow(grid)*nrow(grid2)
-pb=progress_bar$new(total=total_steps)
+if(prgress){pb=progress_bar$new(total=total_steps)}
 step=0
 tic()
 
@@ -131,7 +131,7 @@ foreach(split = 1:nsplits) %dopar% {
       
       of_h_nu=append(of_h_nu,
                      of)
-      pb$tick()
+      if(prgress){pb$tick()}
       step=step+1
       if(step%%200==0){print(paste(step," / ", total_steps))}
     }
@@ -186,7 +186,7 @@ foreach(split = 1:nsplits) %dopar% {
 }
 
 time=toc(quiet=TRUE)
-pb$terminate()
+if(prgress){pb$terminate()}
 cat(paste('mean test logS:', mean_test_logS,"| ",
           'time elapsed:',unname(time$toc)))
 
