@@ -2,9 +2,8 @@
 # The performance is slightly better than using OF as metric to choose h and nu, but considerably slower.
 
 
-
-#install.packages("keras")
-#install.packages("tidyverse")
+install.packages("keras")
+install.packages("tidyverse")
 
 library(tictoc)
 library(tensorflow)
