@@ -12,8 +12,18 @@ library(MASS)
 library(keras)
 library(tidyverse)
 library(progress)
-reticulate::use_python("C:\\Apps\\Anaconda3\\python.exe")
 
+library(foreach)
+library(doParallel)
+
+
+reticulate::use_python("/opt/anaconda3/envs/myenv/bin/python")
+
+num_cores_outer <- 4 #
+num_cores_inner <- 2  # Adjust this value based on the available resources
+
+# Register the parallel backend
+registerDoParallel(cores = num_cores_outer)
 
 data(Boston)
 df =as.data.frame(Boston)
@@ -40,7 +50,10 @@ total_steps=nsplits*nrow(grid)*nrow(grid2)
 pb=progress_bar$new(total=total_steps)
 step=0
 tic()
-for (split in 1:nsplits){
+
+
+foreach(split = 1:nsplits) %dopar% {
+  registerDoParallel(cores = num_cores_inner)
   ind=sample(1:nrow(data))
   train_ind = ind[1:floor(0.72 * nrow(data))]
   val_ind=ind[(floor(0.72 * nrow(data))+1):floor(0.9 * nrow(data))]
@@ -63,22 +76,26 @@ for (split in 1:nsplits){
   MSE=c()
   nuu=c()
   hh=c()
-  for (j in 1:nrow(grid2)){
+  foreach (j = 1:nrow(grid2))%dopar%{
     Lr=as.numeric(grid2[j,])[1]
     bs=as.numeric(grid2[j,])[2]
     
     model = keras_model_sequential()
     model %>%
       layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
+      # layer_dense(units = 50, activation = "relu") %>%
       layer_dense(units = 1, activation = "linear")
     
     
     
     model %>% compile(
       loss = "mean_squared_error",
+      optimizer = optimizer_sgd(learning_rate  = Lr)
       
-   # in case of M1/M2
-    # optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = Lr)
+      # in case of M1/M2 chip:   
+      #   optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = Lr)
+      
+      
     )
     
     
@@ -101,23 +118,23 @@ for (split in 1:nsplits){
     )))
     fitted=as.numeric( model %>% predict(as.matrix(X_train),
                                          verbose = 0))
-    pred_val=as.numeric( model %>% predict(as.matrix(X_val),
-                                           verbose = 0))
+    #pred_val=as.numeric( model %>% predict(as.matrix(X_val), verbose = 0))
+    
     of_h_nu=c()
     
     for (i in 1:nrow(grid)){
       
       nu=as.numeric(grid[i,])[1]
       h=as.numeric(grid[i,])[2]
+      of=OF_h(y_train,fitted,h,nu)$logS
+      # of=-sum(apply(cbind(pred_val,y_val),1, function(u){
+      #   log(smooth_IDR_density(y_train,fitted,h=h,nu=nu,y_test=u[2],x_test=u[1]))}))
       
-      of=-sum(apply(cbind(pred_val,y_val),1, function(u){
-        log(smooth_IDR_density(y_train,fitted,h=h,nu=nu,y_test=u[2],x_test=u[1]))}))
-      of_h_nu=append(of_h_nu, of)
+      of_h_nu=append(of_h_nu,
+                     of)
       pb$tick()
-
       step=step+1
       if(step%%200==0){print(paste(step," / ", total_steps))}
-     
     }
     
     nuu=append(nuu,as.numeric(grid[which.min(of_h_nu),])[1])
@@ -131,17 +148,18 @@ for (split in 1:nsplits){
   model = keras_model_sequential()
   model %>%
     layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
+    #layer_dense(units = 50, activation = "relu") %>%
     layer_dense(units = 1, activation = "linear")
   
   
   
   model %>% compile(
     loss = "mean_squared_error",
-    optimizer = optimizer_adam(learning_rate  = lr_opt)
-
-    # in case of M1/M2
-    #optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = lr_opt)
-   
+    optimizer = optimizer_sgd(learning_rate  = lr_opt)
+    
+    # in case of M1/M2 chip:   
+    # optimizer = tf$compat$v1$train$AdamOptimizer(learning_rate = lr_opt)
+    
   )
   
   model %>% fit(
@@ -165,11 +183,14 @@ for (split in 1:nsplits){
   
   
   mean_test_logS=mean_test_logS-1/nsplits*test_logS
-  
   print(test_logS)
-  
 }
+
 time=toc(quiet=TRUE)
 pb$terminate()
 cat(paste('mean test logS:', mean_test_logS,"| ",
- 'time elapsed:',unname(time$toc)))
+          'time elapsed:',unname(time$toc)))
+
+
+
+
