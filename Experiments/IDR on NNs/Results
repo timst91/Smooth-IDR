@@ -20,5 +20,5 @@ Results for alg1 OF local:
 
 Results for alg1 OF local normalized:
  -40 epochs:  2.95494588184749, 
- -400 epochs:  
+ -400 epochs:  2.98580221528815 |   time elapsed: 301592.211
  -4000 epochs 2L: 
