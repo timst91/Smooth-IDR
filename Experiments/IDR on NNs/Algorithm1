@@ -19,10 +19,10 @@ library(doParallel)
 
 reticulate::use_python("/opt/anaconda3/envs/myenv/bin/python")
 
-num_cores_outer <- 4 #
-num_cores_inner <- 2  # Adjust this value based on the available resources
+num_cores_outer=4
+num_cores_inner=2
 
-# Register the parallel backend
+
 registerDoParallel(cores = num_cores_outer)
 
 data(Boston)
