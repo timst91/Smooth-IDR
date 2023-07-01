@@ -40,6 +40,10 @@ H=seq(0.01,2,l=10)
 grid=expand.grid(NU,H)
 
 lr=seq(0.001,0.01,l=10)
+
+# when epochs=4000
+#lr=seq(0.0001,0.005,l=10)
+
 batch_size=seq(10,200,l=10)
 grid2=expand.grid(lr,batch_size)
 epochs=40
