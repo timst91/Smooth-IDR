@@ -121,7 +121,7 @@ foreach(split = 1:nsplits) %dopar% {
     )))
     fitted=as.numeric( model %>% predict(as.matrix(X_train),
                                          verbose = 0))
-    #pred_val=as.numeric( model %>% predict(as.matrix(X_val), verbose = 0))
+    pred_val=as.numeric( model %>% predict(as.matrix(X_val), verbose = 0))
     
     of_h_nu=c()
     
@@ -129,9 +129,9 @@ foreach(split = 1:nsplits) %dopar% {
       
       nu=as.numeric(grid[i,])[1]
       h=as.numeric(grid[i,])[2]
-      of=OF_h(y_train,fitted,h,nu)$logS
-      # of=-sum(apply(cbind(pred_val,y_val),1, function(u){
-      #   log(smooth_IDR_density(y_train,fitted,h=h,nu=nu,y_test=u[2],x_test=u[1]))}))
+      
+      of=-sum(apply(cbind(pred_val,y_val),1, function(u){
+         log(smooth_IDR_density(y_train,fitted,h=h,nu=nu,y_test=u[2],x_test=u[1]))}))
       
       of_h_nu=append(of_h_nu,
                      of)
