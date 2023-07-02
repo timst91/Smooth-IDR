@@ -34,7 +34,7 @@ grid2=expand.grid(lr,batch_size)
 epochs=40
 
 mean_test_logS=0
-total=nsplits*nrow(grid1)*nrow(grid2)
+total=nsplits*nrow(grid)*nrow(grid2)
 pb=progress_bar$new(total=total)
 tic()
 step=0
