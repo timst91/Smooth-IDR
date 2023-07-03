@@ -110,7 +110,7 @@ smooth_IDR_density=function(y,x,h=(log(length(x))/length(x))^(1/9),nu=2.5,y_test
     K_h=function(u){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
   }
   else{
-    K_h=function(u){1/h*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)}
+    K_h=function(u){1/h*(2*pi)^(-0.5)*exp(-(u/h)^2/2)}
   }
   #compute w_j(x_test)
   w=NULL
