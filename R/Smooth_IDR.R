@@ -18,7 +18,7 @@ smooth_IDR_CDF=function(y,x,h=3*(log(length(x))/length(x))^(1/9),nu=2.5,y_test=y
         (1+(u/h)^2/nu)^(-(nu+1)/2)}
   }
   else{
-    K_h=function(u){1/h*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)}
+    K_h=function(u){1/h*(2*pi)^(-0.5)*exp(-(u/h)^2/2)}
   }
   #compute w_j(x_test)
   w=NULL
