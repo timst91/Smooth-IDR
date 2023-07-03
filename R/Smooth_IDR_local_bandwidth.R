@@ -102,7 +102,7 @@ smooth_IDR_CDF_h_opt=function(y,x,y_test=y,x_test,c=1,
                                           lower = unique_order_y[j],
                                           upper = unique_order_y[j+1],
                                           stop.on.error = FALSE)$value,
-                        2^(-1)*(erf((Y-unique_order_y[j])/h_opt_Y)-
+                        0.5*(erf((Y-unique_order_y[j])/h_opt_Y)-
                                   erf((Y-unique_order_y[j+1])/h_opt_Y))))
       #K=append(K,mean(c(K_h(Y-unique_order_y[j+1]),K_h(Y-unique_order_y[j]))))
     }
@@ -180,14 +180,14 @@ smooth_IDR_density_h_opt=function(y,x,x_test,y_test=y,
   if(nu!=Inf){
     K_h=function(u,h){1/h*(1/(nu*pi)^(0.5))*gamma((nu+1)/2)/gamma(nu/2)*(1+(u/h)^2/nu)^(-(nu+1)/2)}
     }else{
-    K_h=function(u,h){1/h*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)}
+    K_h=function(u,h){1/h*(2*pi)^(-0.5)*exp(-(u/h)^2/2)}
    }
   
   if(nu_init!=Inf){
      K_h_2=function(u,h){-1/h^3*(nu_init*pi)^(-0.5)*gamma((nu_init+1)/2)/gamma(nu_init/2)*(nu_init+1)/nu_init*(
       (1+(u/h)^2/nu_init)^(-(nu_init+3)/2)-(nu_init+3)/nu_init*(u/h)^2*(1+(u/h)^2/nu_init)^(-(nu_init+5)/2))}
   }else{
-     K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)*(u^2/h^2-1)}
+     K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-(u/h)^2/2)*(u^2/h^2-1)}
   }
   
   
