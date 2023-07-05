@@ -166,5 +166,19 @@ smooth_IDR_density=function(y,x,x_test,
   
 }
 
+# sanity check
+n=100
 
+
+X=runif(n,0,10)
+y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+
+x_test=6
+
+
+integrate(function(x){smooth_IDR_density(y,X,nu=nu,x_test=x_test,y_test=x,h=2.5)},
+          lower=0,upper=20,subdivisions = 1000)
+
+smooth_IDR_CDF(y,X,nu=nu,x_test=x_test,y_test=20,h=2.5)-
+  smooth_IDR_CDF(y,X,nu=nu,x_test=x_test,y_test=0,h=2.5)
 
