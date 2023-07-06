@@ -26,7 +26,7 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
   
   
  
-  logS=0
+  logS=numeric(n)
   count=0
   wk=c()
   
@@ -49,7 +49,7 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
     wik=w_i%*%K
     
     if(sum(wik)!=0){
-      logS=logS-1/n*log(wik)
+      logS[i]=-log(wik)
       wk=append(wk,wik)
       
     }else{
@@ -58,7 +58,7 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
         wik=ifelse(length(wk)<=5,mean(wk),
                    mean(wk[(length(wk)-5):length(wk)]))
         
-        logS=logS-1/n*log(wik)
+        logS[i]=-log(wik)
         wk=append(wk,wik)
       }
       
@@ -69,10 +69,14 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
     
   }
   
-  if(time){time=toc(quiet = TRUE)}
+  if(progress){pb$terminate()}
+  if(time){Time=toc(quiet = TRUE)
   
-  return(list(logS=n/(n-count)*logS,time=unname(time$toc-time$tic)))
   
+  return(list(logS=n/(n-count)*mean(logS),time=unname(Time$toc-Time$tic)))
+  }else{
+    return(mean(logS))
+  }
 }
 
 
@@ -86,11 +90,11 @@ CV_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
   y=y[sort_ind]
   
   unique_order_y=sort(unique(y))
-  n=length(x_unique)
+  n=length(x)
   
   logS=numeric(n)
   
-  if (progress){pb = progress_bar$new(total=length(x_unique))}
+  if (progress){pb = progress_bar$new(total=n)}
   
   
   for (i in 1:n){
@@ -103,9 +107,13 @@ CV_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
     if(progress){pb$tick()}
   }
   if(progress){pb$terminate()}
-  if(time){time=toc(quiet=TRUE)}
+  if(time){
+    time=toc(quiet=TRUE)
+    return(list(logS=mean(logS),time=unname(time$toc-time$tic)))
+  }else{
+    return(mean(logS))
+  }
   
-  return(list(logS=mean(logS),time=unname(time$toc-time$tic)))
   
 }
 
@@ -185,7 +193,7 @@ OF_c=function(y,x,c,nu,
       w_i=w_i}
     
     if(sum(w_i%*%K) !=0){
-      logS[i]=-1/n*log(w_i%*%K)
+      logS[i]=-log(w_i%*%K)
     }else{
       count=count+1
       logS[i]= logS[i-1]
@@ -195,9 +203,13 @@ OF_c=function(y,x,c,nu,
   }
   
   if(progress){pb$terminate()}
-  if(time){time=toc(quiet=TRUE)}
-  return(list(logS=n/(n-count)*mean(logS),time=unname(time$toc-time$tic)))
   
+  if(time){
+    time=toc(quiet=TRUE)
+    return(list(logS=n/(n-count)*mean(logS),time=unname(time$toc-time$tic)))
+  }else{
+    return(mean(logS))
+  }
   
 }
 
