@@ -142,9 +142,9 @@ OF_c=function(y,x,c,nu,
   if(progress){pb <- progress_bar$new(total=n)}
   
   if (nu==Inf){
-    K_h=function(x){dnorm(x,0,h)}
+    K_h=function(x,h){dnorm(x,0,h)}
   }else{
-    K_h=function(x){dt(x/h,nu)/h}
+    K_h=function(x,h){dt(x/h,nu)/h}
   }
   
   
