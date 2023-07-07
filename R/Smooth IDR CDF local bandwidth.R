@@ -4,9 +4,9 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
                               h_init=(log(length(x))/length(x))^(1/10),
                               nu=2.5,
                               nu_init=nu,
-                              max_h=1e2,
-                              progress=FALSE
-                              ){
+                              rel_tol=1e-3,
+                              progress=FALSE,
+                              lower="automatic"){
   
   sort_ind=match(sort(unique(x)),x)
   
@@ -20,69 +20,55 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
   fit.idr=idr(y,data.frame(x))
   pred.idr=predict(fit.idr,data=data.frame(x=x_test))
   
-  # 2nd derivatives of kernel functions
-  
-  if (nu_init!=Inf){
-    K_h_2=function(u,h){-1/h^3*(nu_init*pi)^(-0.5)*
-        gamma((nu_init+1)/2)/gamma(nu_init/2)*(nu_init+1)/nu_init*
-        ((1+(u/h)^2/nu_init)^(-(nu_init+3)/2)-(nu_init+3)/nu_init*(u/h)^2*
-            (1+(u/h)^2/nu_init)^(-(nu_init+5)/2))}
-    }else{
-    K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-(u/h)^2/2)*(u^2/h^2-1)}
-  }
-  
+  cdf=pred.idr[[1]]$cdf
+  points=pred.idr[[1]]$points
+  y_test=sort(unique(y_test))
+  m_test=length(y_test)
   
   if (nu==Inf){
-    
     K_h=function(x,h){dnorm(x,0,h)}
   }else{
     K_h=function(x,h){dt(x/h,nu)/h}
   }
   
-  
-  #compute cdfs
-  
-  
-  fit.idr=idr(y,data.frame(x))
-  pred.idr=predict(fit.idr,data=data.frame(x=x_test),digits=6)
-  
-  
-  points=pred.idr[[1]]$points
-  cdf.idr=pred.idr[[1]]$cdf
-  
-  cdf=numeric(m)
-  
-  for(j in 1:m){
-    y=unique_order_y[j]
-    ind_y=ifelse(points[1]<=y,max(which(points <= y)),0)
-    
-    cdf[j]=ifelse(ind_y>0,cdf.idr[ind_y],0)
-    
+  if(nu_init!=Inf){
+    K_h_2=function(u,h){-1/h^3*(nu_init*pi)^(-0.5)*gamma((nu_init+1)/2)/gamma(nu_init/2)*(nu_init+1)/nu_init*(
+      (1+(u/h)^2/nu_init)^(-(nu_init+3)/2)-(nu_init+3)/nu_init*(u/h)^2*(1+(u/h)^2/nu_init)^(-(nu_init+5)/2))}
+  }else{
+    K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-(u/h)^2/2)*(u^2/h^2-1)}
   }
   
-  #compute w_j(x_test)
+  if(progress){pb=progress_bar$new(total=m_test+1)}
   
- 
+  int=smooth_IDR_density_h_opt(y,x,x_test,y_test=mean(y),
+                               c=c,h_init = h_init,
+                               nu=nu,
+                               nu_init = nu_init,
+                               normalize = TRUE)$int
+  
+  if(progress){pb$tick()}
+  
   w=numeric(m)
   
   for(j in 1:m){
+    
     y=unique_order_y[j]
+    
     ind_y=ifelse(points[1]<=y,max(which(points <= y)),0)
     
     if(j==1){
-      w[j]=ifelse(ind_y>0,cdf.idr[ind_y],0)
+      w[j]=ifelse(ind_y>0,cdf[ind_y],0)
     }else{
       
       y1= unique_order_y[j-1]
       
       ind_y_1=ifelse(points[1]<=y1,max(which(points <= y1)),0)
       
-      
       if(ind_y>0){
         if(ind_y_1>0){
-          w[j]=ifelse(ind_y!=ind_y_1,cdf.idr[ind_y]-cdf.idr[ind_y_1],0)
+          w[j]=ifelse(ind_y!=ind_y_1,cdf[ind_y]-cdf[ind_y_1],0)
         }else{
-          w[j]=cdf.idr[ind_y]}
+          w[j]=cdf[ind_y]}
       }else{w[j]=0}
       
     }
@@ -90,56 +76,69 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
     
   }
   
-  K_int=numeric(m)
-  
-  
-  y_test=sort(y_test)
-  m_test=length(y_test)
-  
-  smooth_IDR_x_test=numeric(m_test)
-  if(progress){pb = progress_bar$new(total=m_test)}
-  u=numeric(m_test)
   
   kappa0=K_h(0,1)
   eps_n=(log(n)/n)^1/3
   
   if(nu!=Inf){var=nu/(nu-2)}else{var=1}
-    
-  for (i in 1:m_test){
-    Y=y_test[i]
-   
-    second_der= as.numeric(w%*%sapply(unique_order_y,function(u){K_h_2(Y-u,h_init)}))
-    
-   
-    h_opt_Y=c*(4*kappa0*eps_n/(abs(second_der)*var))^(1/3)
-    h_opt_Y=ifelse(max_h>h_opt_Y,h_opt_Y,max_h)
-    u[i]=h_opt_Y
-    
-    if(nu== Inf){
-      
-      for(j in 1:(m-1)){
-        K_int[j]=pnorm(unique_order_y[j+1],Y,h_opt_Y)-
-          pnorm(unique_order_y[j],Y,h_opt_Y)
-      }
-      K_int[m]=1-pnorm(unique_order_y[m],Y,h_opt_Y)
-    }else{
-      
-      for(j in 1:(m-1)){
-        K_int[j]=pt((unique_order_y[j+1]-Y)/h_opt_Y,nu)-
-          pt((unique_order_y[j]-Y)/h_opt_Y,nu)
-      }
-      
-      K_int[m]=1-pt((unique_order_y[m]-Y)/h_opt_Y,nu)
-    }
-    if(progress){pb$tick()}
-    
-    smooth_IDR_x_test[i]=cdf%*%K_int
-    
-  }
-
-  if(progress){pb$terminate()}
-  return(list(cdf=smooth_IDR_x_test,opt_bw=u))
   
-} 
+   
+  h_opt=function(y){
+    second_der= w%*%sapply(unique_order_y,function(u){K_h_2(u-y,h_init)})
+    
+    return(c*(4*kappa0*eps_n/(abs(second_der)*var))^(1/3))
+  }
+  
+  if(lower=="automatic"){
+    lower=0.5*min(c(y_test,y))-0.5*(max(c(y_test,y)))
+  }
+  
 
-
+  
+  
+  nonzero=which(w!=0)
+  
+  cdf=numeric(m_test)+w[nonzero]%*%sapply(unique_order_y[nonzero],
+                                 function(u){
+                                   integrate(
+                                     Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                     lower=lower,
+                                     upper=y_test[1],
+                                     rel.tol = rel_tol)$value
+                                 })
+  
+  if(progress){pb$tick()}
+  
+  if(m_test>=2){
+    if(m_test==2){
+      cdf[2]=cdf[1]+w[nonzero]%*%sapply(unique_order_y[nonzero],
+                               function(u){
+                                 integrate(
+                                   Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                   lower=y_test[1],
+                                   upper=y_test[2],
+                                   rel.tol = rel_tol)$value
+                               })
+      if(progress){pb$tick()}
+    }else{
+      for(i in 2:(m_test)){
+        K_int=sapply(unique_order_y[nonzero],
+                     function(u){
+                       integrate(
+                         Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                         lower=y_test[i-1],
+                         upper=y_test[i],
+                         rel.tol = rel_tol)$value})
+        cdf[i]=cdf[i-1]+w[nonzero]%*%K_int
+        
+        if(progress){pb$tick()}
+        }
+    }
+  }
+  
+  if(progress){pb$terminate()}
+  
+  cdf=1/int*cdf
+  return(cdf)
+  
+}
