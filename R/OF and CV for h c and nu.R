@@ -75,7 +75,7 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
   
   return(list(logS=n/(n-count)*mean(logS),time=unname(Time$toc-Time$tic)))
   }else{
-    return(mean(logS))
+    return(n/(n-count)*mean(logS))
   }
 }
 
@@ -102,7 +102,7 @@ CV_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
                              h=h,nu=nu,
                              y_test = y[i],
                              x_test =x[i])
-    logS[i]=-log(model)
+    logS[i]=min(c(-log(model),-log(.Machine$double.xmin)))
     
     if(progress){pb$tick()}
   }
@@ -155,6 +155,12 @@ OF_c=function(y,x,c,nu,
     K_h_2=function(u,h){1/h^3*(2*pi)^(-0.5)*exp(-2*(u/h)^2/2)*(u^2/h^2-1)}
   }
   
+  int=smooth_IDR_density_h_opt(y=y,x=x,
+                               c=c,nu=nu,
+                               y_test = y[1],
+                               x_test =x[1],
+                               #range_int = Inf,
+                               normalize = 1)$integral
   
   
   count=0
@@ -168,8 +174,8 @@ OF_c=function(y,x,c,nu,
   for (i in 1:n){
     w=cdf[i,1]+numeric(m)
     for (j in 2:m){
-      w_j=cdf[i,j]-cdf[i,j-1]
-      w=append(w,w_j)
+      w[j]=cdf[i,j]-cdf[i,j-1]
+      
     }
     
     K2=sapply(unique_order_y,function(u){K_h_2(u-y[i],h_init)})
@@ -193,45 +199,52 @@ OF_c=function(y,x,c,nu,
       w_i=w_i}
     
     if(sum(w_i%*%K) !=0){
-      logS[i]=-log(w_i%*%K)
+      logS[i]=-log(1/int*w_i%*%K)
     }else{
       count=count+1
-      logS[i]= logS[i-1]
+      logS[i]= ifelse(i>1,1/int*logS[i-1],0)
       }
     
     if(progress){pb$tick()}
   }
   
   if(progress){pb$terminate()}
-  
+  count=0
   if(time){
     time=toc(quiet=TRUE)
-    return(list(logS=n/(n-count)*mean(logS),time=unname(time$toc-time$tic)))
+    return(list(logS=mean(logS),time=unname(time$toc-time$tic)))
   }else{
-    return(mean(logS))
+    return(n/(n-count)*mean(logS))
   }
   
 }
 
-CV_c=function(y,x,c,progress=FALSE){
-  sort_ind= match(sort(unique(x)), x)
-  x_unique=x[sort_ind]
+CV_c=function(y,x,c,nu,progress=FALSE){
   
-  y=y[sort_ind]
-  n=length(x_unique)
+  n=length(x)
   
   logS=numeric(n)
-  if(progress){pb= progress_bar$new(total=length(x_unique))}
   
+  if(progress){pb= progress_bar$new(total=length(x))}
+  int=smooth_IDR_density_h_opt(y=y,x=x,
+                               c=c,nu=nu,
+                               y_test = y[1],
+                               x_test =x[1],
+                              # range_int = Inf,
+                               normalize = 1)$integral
   
   for (i in 1:n){
-    model=smooth_IDR_density_h_opt(y=y[-i],x=x_unique[-i],c=c,
-                                   y_test = y[sort_ind][i],
-                                   x_test =x_unique[i])$density
-    logS[i]=-log(model)
+    #model=1/int*
+     model=1/int* smooth_IDR_density_h_opt(y=y[-i],x=x[-i],
+                                         c=c,nu=nu,
+                                         y_test = y[i],
+                                         x_test =x[i])$density
+    
+    logS[i]=min(c(-log(model),-log(.Machine$double.xmin)))
     if(progress){pb$tick()}
   }
   if(progress){pb$terminate()}
+  
   
   return(mean(logS))
 }
