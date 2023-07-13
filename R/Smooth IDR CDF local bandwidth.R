@@ -1,7 +1,11 @@
+library(pracma)
+library(isodistrreg)
+library(progress)
+
 smooth_IDR_CDF_h_opt=function(y,x,x_test,
                               y_test=y,
                               c=1,
-                              h_init=(log(length(x))/length(x))^(1/10),
+                              h_init=(log(length(x))/length(x))^(1/9),
                               nu=2.5,
                               nu_init=nu,
                               rel_tol=1e-3,
@@ -44,7 +48,7 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
                                c=c,h_init = h_init,
                                nu=nu,
                                nu_init = nu_init,
-                               normalize = TRUE)$int
+                               normalize = TRUE)$integral
   
   if(progress){pb$tick()}
   
@@ -82,63 +86,63 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
   
   if(nu!=Inf){var=nu/(nu-2)}else{var=1}
   
-   
+  
   h_opt=function(y){
     second_der= w%*%sapply(unique_order_y,function(u){K_h_2(u-y,h_init)})
     
     return(c*(4*kappa0*eps_n/(abs(second_der)*var))^(1/3))
   }
   
+  
   if(lower=="automatic"){
     lower=0.5*min(c(y_test,y))-0.5*(max(c(y_test,y)))
   }
   
-
+  
   
   
   nonzero=which(w!=0)
-  
-  cdf=numeric(m_test)+w[nonzero]%*%sapply(unique_order_y[nonzero],
-                                 function(u){
-                                   integrate(
-                                     Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                                     lower=lower,
-                                     upper=y_test[1],
-                                     rel.tol = rel_tol)$value
-                                 })
+  w0=w[nonzero]
+  unique_order_y0=unique_order_y[nonzero]
+  cdf=numeric(m_test)+w0%*%sapply(unique_order_y0,
+                                  function(u){
+                                    quad(
+                                      Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                      xa=lower,
+                                      xb=y_test[1],tol=1e-5)
+                                  })
   
   if(progress){pb$tick()}
   
   if(m_test>=2){
     if(m_test==2){
-      cdf[2]=cdf[1]+w[nonzero]%*%sapply(unique_order_y[nonzero],
-                               function(u){
-                                 integrate(
-                                   Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                                   lower=y_test[1],
-                                   upper=y_test[2],
-                                   rel.tol = rel_tol)$value
-                               })
+      cdf[2]=cdf[1]+w0%*%sapply(unique_order_y0,
+                                function(u){
+                                  quad(
+                                    Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                    xa=y_test[1],
+                                    xb=y_test[2],tol=1e-5)
+                                })
       if(progress){pb$tick()}
     }else{
       for(i in 2:(m_test)){
-        K_int=sapply(unique_order_y[nonzero],
+        K_int=sapply(unique_order_y0,
                      function(u){
-                       integrate(
+                       quad(
                          Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                         lower=y_test[i-1],
-                         upper=y_test[i],
-                         rel.tol = rel_tol)$value})
-        cdf[i]=cdf[i-1]+w[nonzero]%*%K_int
+                         xa=y_test[i-1],
+                         xb=y_test[i],tol = 1e-5
+                       )})
+        cdf[i]=cdf[i-1]+w0%*%K_int
         
         if(progress){pb$tick()}
-        }
+      }
     }
   }
   
   if(progress){pb$terminate()}
   
   cdf=1/int*cdf
-  return(cdf)
+  return(list(cdf=cdf,integral=int))
   
 }
