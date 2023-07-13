@@ -63,6 +63,9 @@ smooth_IDR_density_h_opt=function(y,x,x_test,
     
     
   }
+  nonzero=which(w!=0)
+  w=w[nonzero]
+  unique_order_y=unique_order_y[nonzero]
   
   K_int=numeric(m)
   
@@ -91,7 +94,8 @@ smooth_IDR_density_h_opt=function(y,x,x_test,
     
     if(progress){pb$tick()}
     
-    }
+  }
+  
   if(normalize){
     integrand=function(s){
       K2=sapply(unique_order_y,function(u){K_h_2(u-s,h_init)})
@@ -102,9 +106,14 @@ smooth_IDR_density_h_opt=function(y,x,x_test,
       return(w%*%sapply(unique_order_y,function(u){K_h(s-u,h_opt_Y)}))
     }
     
-    range=range(y)+c(-100,100)
-    int=integrate(Vectorize(integrand),lower=range[1],upper=range[2],
-                  subdivisions = 1000)$value
+    
+    range=range(unique_order_y)+c(-10,10)
+    
+    
+    #int=integrate(Vectorize(integrand),lower=range[1],upper=range[2],
+    #              subdivisions = ifelse(range_int=="finite",500,2000)
+    #)$value
+    int=quad(Vectorize(integrand),xa=range[1],xb=range[2])
     
   }
   
