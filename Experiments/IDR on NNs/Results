@@ -1,10 +1,7 @@
 RESULTS
 
-40 epochs:
+400 epochs:
+local.bw   local.bw.normal        local.bw.2      local.bw.normal.2         global.of   global.gs 
+2.289005          2.779315          2.154385               2.575105          2.664980    2.499985 
 
-mean test logS local bw: 2.36297357597848 |
-mean test logS local bw normalized: 2.59106485440394 |  
-mean test logS local bw 2: 2.16149052025334 |
-mean test logS local bw normalized 2: 2.50386108456404 |
-mean test logS of global: 2.61089015235322 | 
-mean test logS grid search: 2.4961236015469 |   time elapsed: 22916.059
+
