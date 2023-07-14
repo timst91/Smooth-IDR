@@ -347,7 +347,7 @@ for (split in 1:nsplits){
     log(smooth_IDR_density_h_opt(y_train_val,fitted,
                                  c=c_opt_2,
                                  h_init = h_init_opt,
-                                 nu_init=nu_opt,
+                                 nu=nu_opt,
                                  
                                  y_test=u[2],
                                  x_test=u[1]
@@ -358,7 +358,7 @@ for (split in 1:nsplits){
     log(smooth_IDR_density_h_opt(y_train_val,fitted,
                                  c=c_opt_2,
                                  h_init = h_init_opt,
-                                 nu_init=nu_opt,
+                                 nu=nu_opt,
                                  y_test=u[2],
                                  x_test=u[1],
                                  normalize=TRUE
