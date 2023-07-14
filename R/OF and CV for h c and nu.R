@@ -70,10 +70,10 @@ OF_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
   }
   
   if(progress){pb$terminate()}
-  if(time){Time=toc(quiet = TRUE)
+  if(time){Time=toc(echo=1)
   
   
-  return(list(logS=n/(n-count)*mean(logS),time=unname(Time$toc-Time$tic)))
+  return(list(logS=n/(n-count)*mean(logS),time=unname(Time)))
   }else{
     return(n/(n-count)*mean(logS))
   }
@@ -108,8 +108,8 @@ CV_h=function(y,x,h,nu,time=FALSE,progress=FALSE){
   }
   if(progress){pb$terminate()}
   if(time){
-    time=toc(quiet=TRUE)
-    return(list(logS=mean(logS),time=unname(time$toc-time$tic)))
+    time=toc(echo=1)
+    return(list(logS=mean(logS),time=unname(time)))
   }else{
     return(mean(logS))
   }
