@@ -1,3 +1,6 @@
+library(isodistrreg)
+library(cubature)
+
 smooth_IDR_density_h_opt=function(y,x,x_test,
                                   y_test=y,
                                   c=1,
@@ -113,7 +116,7 @@ smooth_IDR_density_h_opt=function(y,x,x_test,
     #int=integrate(Vectorize(integrand),lower=range[1],upper=range[2],
     #              subdivisions = ifelse(range_int=="finite",500,2000)
     #)$value
-    int=quad(Vectorize(integrand),xa=range[1],xb=range[2])
+    int=adaptIntegrate(Vectorize(integrand),lowerLimit =range[1],upperLimit =range[2])$integral
     
   }
   
