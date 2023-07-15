@@ -1,6 +1,5 @@
-library(pracma)
+library(cubature)
 library(isodistrreg)
-library(progress)
 
 smooth_IDR_CDF_h_opt=function(y,x,x_test,
                               y_test=y,
@@ -9,7 +8,7 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
                               nu=2.5,
                               nu_init=nu,
                               rel_tol=1e-3,
-                              progress=FALSE,
+                              progress=FALSE,tol=1e-4,
                               lower="automatic"){
   
   sort_ind=match(sort(unique(x)),x)
@@ -45,7 +44,7 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
   if(progress){pb=progress_bar$new(total=m_test+1)}
   
   int=smooth_IDR_density_h_opt(y,x,x_test,y_test=mean(y),
-                               c=c,h_init = h_init,
+                               c=c,
                                nu=nu,
                                nu_init = nu_init,
                                normalize = TRUE)$integral
@@ -104,36 +103,39 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
   nonzero=which(w!=0)
   w0=w[nonzero]
   unique_order_y0=unique_order_y[nonzero]
-  cdf=numeric(m_test)+w0%*%sapply(unique_order_y0,
+  cdf=numeric(m_test)+sum(w0*sapply(unique_order_y0,
                                   function(u){
-                                    quad(
+                                    adaptIntegrate(
                                       Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                                      xa=lower,
-                                      xb=y_test[1],tol=1e-5)
-                                  })
+                                      lowerLimit=lower,
+                                      upperLimit=y_test[1],tol=tol,
+                                      absError = tol)$integral
+                                  }))
   
   if(progress){pb$tick()}
   
   if(m_test>=2){
     if(m_test==2){
-      cdf[2]=cdf[1]+w0%*%sapply(unique_order_y0,
-                                function(u){
-                                  quad(
-                                    Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                                    xa=y_test[1],
-                                    xb=y_test[2],tol=1e-5)
-                                })
+      cdf[2]=cdf[1]+sum(w0*sapply(unique_order_y0,
+                                  function(u){
+                                    adaptIntegrate(
+                                      Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                      lowerLimit=y_test[1],
+                                      upperLimit=y_test[2],tol=tol,
+                                      absError = tol)$integral
+                                  }))
       if(progress){pb$tick()}
     }else{
       for(i in 2:(m_test)){
-        K_int=sapply(unique_order_y0,
-                     function(u){
-                       quad(
-                         Vectorize(function(w){K_h(w-u,h_opt(w))}),
-                         xa=y_test[i-1],
-                         xb=y_test[i],tol = 1e-5
-                       )})
-        cdf[i]=cdf[i-1]+w0%*%K_int
+       
+        cdf[i]=cdf[i-1]+sum(w0*sapply(unique_order_y0,
+                                      function(u){
+                                        adaptIntegrate(
+                                          Vectorize(function(w){K_h(w-u,h_opt(w))}),
+                                          lowerLimit=y_test[i-1],
+                                          upperLimit=y_test[i],tol=tol,
+                                          absError = tol)$integral
+                                      }))
         
         if(progress){pb$tick()}
       }
