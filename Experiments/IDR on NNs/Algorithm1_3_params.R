@@ -135,7 +135,7 @@ normalized_df = as.data.frame(lapply(df[, -14], scale))
 
 y= df$medv
 
-nsplits=10
+nsplits=20
 
 NU=c(2.01,3,4,5,10,20,Inf)
 
@@ -156,17 +156,21 @@ grid4=expand.grid(NU,H_init,C)
 #lr=seq(1e-6,1e-4,l=3)
 
 #400 epochs:
-lr=seq(1e-5,1e-2,l=3)
+#lr=seq(1e-5,1e-2,l=3)
 
 #40 epochs:
-#lr=seq(1e-3,1e-1,l=3)
-
+lr=seq(1e-3,1e-1,l=3)
 
 batch_size=c(1,8,16,32)
 
+#for quick single run:
+#lr=1e-2
+#bs=1
+
+
 grid2=expand.grid(lr,batch_size)
 
-epochs=400
+epochs=40
 
 mean_test_logS_local=numeric(nsplits)
 mean_test_logS_local_norm=numeric(nsplits)
@@ -527,9 +531,9 @@ cat(paste('mean test logS local bw:', -mean(mean_test_logS_local),"| ",
           'mean test logS local bw normal 2:', -mean(mean_test_logS_local_norm2),"| ",
           
           'mean test logS of global:',-mean( mean_test_logS_of),"| ",
-          'mean test logS grid search:', -mean(mean_test_logS_grid_search),"| ",
+          'mean test logS grid search:', -mean(mean_test_logS_grid_search),"| "
           
-          ' time elapsed:',unname(time)))
+          ))
 
 ## integrals: 
 
