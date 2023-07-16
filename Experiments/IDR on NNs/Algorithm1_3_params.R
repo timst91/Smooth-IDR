@@ -1,9 +1,121 @@
-#install.packages("pracma")
-library(pracma)
+# SUMMARY OF PROCEDURE
+#
+#
+# This code compares the performance between smooth IDR with global and local
+# bandwidth selection based on algorithm 1 from 
+# https://arxiv.org/pdf/2212.08376v1.pdf. The procedure is as follows:
+# For (lr,bs) in (learning rates, batch sizes){
+#   train neural network with parameters (lr,bs) 
+#   select optimal smooth IDR parameters (nu,h,h_init,c,nu_init) in 4 different 
+#   ways:
+#    1. For smooth IDR with global bandwidth choose (h,nu) by minimizing 
+#       OF(y_val,prediction(x_val),h,nu)
+#    2. For smooth IDR with global bandwidth choose (h,nu) by minimizing 
+#       -sum(log(smooth_IDR_density_global_h(y_train,prediction(x_train),
+#                                           y_eval=y_val,
+#                                           x_eval=prediction(x_val),
+#                                           h,nu))) 
+#    3. For smooth IDR with local bandwidth choose (h_init,nu_init) obtained
+#       by optimal (h,nu) from 1. and select (c,nu) by minimizing 
+#
+#       -sum(log(smooth_IDR_density_local_h(y_train,prediction(x_train),
+#                                           y_eval=y_val,
+#                                           x_eval=prediction(x_val),
+#                                           h_init=h_opt1,nu_init=nu_opt1,
+#                                           c,nu))) 
+#    4. For smooth IDR with local bandwidth choose (c,nu,h_init,nu_init=nu)
+#       by minimizing 
+#
+#       -sum(log(smooth_IDR_density_local_h(y_train,prediction(x_train),
+#                                           y_eval=y_val,
+#                                           x_eval=prediction(x_val),
+#                                           h_init,nu_init=nu,
+#                                           c,nu))) 
+#}
+# Choose optimal (lr,bs) based on minimal MSE and the according optimal 
+# (h,nu,c,nu_init,h_init). For evaluation of test set performance compute
+#
+#     -sum(log(smooth_IDR(y[training+validation set],
+#                         prediction(x[training+validation set]),
+#                         y_eval=y_test,x_eval=prediction(x_test))
+#                    
+# with the parameters chosen with each of the steps 1.-4.
+#
+# Also, the chosen parameters and normalizing integrals of the local density 
+# estimates are being recorded.
+
+###############################################################################
+
+
+# IMPORTANT INFO REGARDING IMPLEMENTATION
+# 
+# The code requires the use of a python environment through reticulate::use_python().
+# The environment needs to have tensorflow installed. 
+# Defining the neural network depends on the versions of python and R; if 
+#
+# model = keras_model_sequential()
+# model %>%
+#  layer_dense(units = 50, activation = "relu", input_shape = 13) %>%
+#  layer_dense(units = 1, activation = "linear")
+#
+# gives an error, you need to use tensor notation like: 
+#
+# model <- tf$keras$Sequential()
+# model$add(tf$keras$layers$Dense(units = 50, activation = "relu", 
+#                                input_dim = as.integer(13)))
+# model$add(tf$keras$layers$Dense(units =50, activation = "relu"))
+# model$add(tf$keras$layers$Dense(units = 1, activation = "linear"))
+#
+# model$compile(
+# loss = "mean_squared_error",
+# optimizer = tf$keras$optimizers$Adam(learning_rate = Lr)
+# )
+
+# Train the model
+# model$fit(
+#  x = np$array(as.matrix(unname(X_train))),
+#  y = np$array(y_train),
+# batch_size = as.integer(bs),
+#  epochs = as.integer(epochs),
+#  verbose = 0,
+#  validation_split = 0
+# )
+#
+#
+#
+# MSE = append(MSE, unname(model$evaluate(
+#  x = np$array(as.matrix(unname(X_val))),
+#  y = np$array(y_val),
+#  verbose = 0
+# )))
+
+# fitted <- as.numeric(model$ predict(
+#  tf$constant(as.matrix(X_train)), verbose = 0))
+
+###############################################################################
+
+
+
+
+
+#install.packages("devtools")
+library(devtools)
+#loads the neccessary functions
+source_url("https://raw.githubusercontent.com/timst91/Smooth-IDR/main/R/all.R")
+
+
 
 #install.packages("keras")
 #install.packages("tidyverse")
+#install.packages("cubature")
+#install.packages("tensorflow")
+#install.packages("tictoc")
+#install.packages("progress")
+#install.packages("isodistrreg")
+#install.packages("reticulate")
 
+
+library(cubature)
 library(tictoc)
 library(tensorflow)
 library(MASS)
@@ -13,7 +125,7 @@ library(progress)
 library(isodistrreg)
 library(reticulate)
 
-reticulate::use_python("/opt/anaconda3/envs/myenv2/bin/python3")
+use_python("/opt/anaconda3/envs/myenv/bin/python3")
 
 data(Boston)
 df =as.data.frame(Boston)
@@ -23,7 +135,7 @@ normalized_df = as.data.frame(lapply(df[, -14], scale))
 
 y= df$medv
 
-nsplits=1
+nsplits=10
 
 NU=c(2.01,3,4,5,10,20,Inf)
 
@@ -31,7 +143,7 @@ C=seq(0.01,4,l=10)
 
 H=seq(0.01,3,l=10)
 
-H_init=seq(0.01,2,l=7)
+H_init=seq(0.005,2,l=7)
 
 grid=expand.grid(NU,C)
 
@@ -44,18 +156,17 @@ grid4=expand.grid(NU,H_init,C)
 #lr=seq(1e-6,1e-4,l=3)
 
 #400 epochs:
-#lr=seq(1e-5,1e-2,l=3)
+lr=seq(1e-5,1e-2,l=3)
 
 #40 epochs:
-lr=seq(1e-3,1e-1,l=3)
+#lr=seq(1e-3,1e-1,l=3)
 
 
 batch_size=c(1,8,16,32)
 
-
 grid2=expand.grid(lr,batch_size)
 
-epochs=40
+epochs=400
 
 mean_test_logS_local=numeric(nsplits)
 mean_test_logS_local_norm=numeric(nsplits)
@@ -76,7 +187,9 @@ tic()
 step=0
 
 params=matrix(nrow=nsplits,ncol=11)
-
+colnames(params)= c("lr_opt","bs_opt","c_opt","nu_opt_local","nu_opt_gs", "nu_opt_of",
+  "h_opt_gs", "h_opt_of","nu2_opt", "h_opt_init","c_opt_2")
+normalizing_integrals=list()
 
 for (split in 1:nsplits){
   ind=sample(1:nrow(data))
@@ -225,7 +338,7 @@ for (split in 1:nsplits){
     for (i in 1:nrow(grid4)){
       
       nu=as.numeric(grid4[i,])[1]
-    
+      
       
       h_init=as.numeric(grid4[i,])[2]
       c=as.numeric(grid4[i,])[3]
@@ -256,7 +369,7 @@ for (split in 1:nsplits){
   
   lr_opt=as.numeric(grid2[which.min(MSE),])[1]
   bs_opt=as.numeric(grid2[which.min(MSE),])[2]
- 
+  
   c_opt=cc[which.min(MSE)]
   nu_opt_local=nuu[which.min(MSE)]
   
@@ -267,24 +380,24 @@ for (split in 1:nsplits){
   nu_opt_gs=nuu_gs[which.min(MSE)]
   
   nu2_opt=nu2[which.min(MSE)]
-
+  
   h_init_opt=hh_init[which.min(MSE)]
   c_opt_2=cc2[which.min(MSE)]
   
   
- # print(paste('opt lr:', lr_opt,"| ",
+  # print(paste('opt lr:', lr_opt,"| ",
   #            ' bs:',bs_opt,"| ",
   #            ' c:', c_opt, "| ",
   #            ' nu local:', nu_opt_local, "| ",
   #            ' nu gs:', nu_opt_gs, "| ",
-#              ' nu of:', nu_opt, "| ",
- #             ' h gs:', h_opt_gs, "| ",
+  #              ' nu of:', nu_opt, "| ",
+  #             ' h gs:', h_opt_gs, "| ",
   #            ' h of:', h_opt, "| ",
-#              '2nd nu:',nu2_opt,"| ",
+  #              '2nd nu:',nu2_opt,"| ",
   #            '2nd nu_init:',nu_init2_opt,"| ",
- #             
-   #           'opt h_init:',h_init_opt, "| ",
-    #          '2nd c:',c_opt_2,"| ",
+  #             
+  #           'opt h_init:',h_init_opt, "| ",
+  #          '2nd c:',c_opt_2,"| ",
   #))
   
   params[split,]=c(lr_opt,bs_opt,c_opt,nu_opt_local,nu_opt_gs, nu_opt,
@@ -352,25 +465,32 @@ for (split in 1:nsplits){
                                  normalize=TRUE
     )$density)}))
   
-  test_logS_local2=mean(apply(cbind(predictions,y_test),1, function(u){
-    log(smooth_IDR_density_h_opt(y_train_val,fitted,
+  dens_local2=apply(cbind(predictions,y_test),1, function(u){
+    smooth_IDR_density_h_opt(y_train_val,fitted,
                                  c=c_opt_2,
                                  h_init = h_init_opt,
                                  nu=nu2_opt,
                                  y_test=u[2],
                                  x_test=u[1]
                                  #normalize=TRUE
-    )$density)}))
+    )$density})
   
-  test_logS_local_norm2=mean(apply(cbind(predictions,y_test),1, function(u){
-    log(smooth_IDR_density_h_opt(y_train_val,fitted,
-                                 c=c_opt_2,
-                                 h_init = h_init_opt,
-                                 nu=nu2_opt,
-                                 y_test=u[2],
-                                 x_test=u[1],
-                                 normalize=TRUE
-    )$density)}))
+  test_logS_local2=mean(log(dens_local2))
+  
+  norm_integrals_dens= apply(cbind(predictions,y_test),1, function(u){
+    smooth_IDR_density_h_opt(y_train_val,fitted,
+                             c=c_opt_2,
+                             h_init = h_init_opt,
+                             nu=nu2_opt,
+                             y_test=u[2],
+                             x_test=u[1],
+                             normalize=TRUE
+    )$integral})
+  
+  normalizing_integrals=append(normalizing_integrals,
+                               list(norm_integrals_dens))
+  
+  test_logS_local_norm2=mean(log(dens_local2/norm_integrals_dens))
   
   
   
@@ -399,7 +519,7 @@ for (split in 1:nsplits){
   
 }
 
-time=toc(echo=0)
+time=toc()
 pb$terminate()
 cat(paste('mean test logS local bw:', -mean(mean_test_logS_local),"| ",
           'mean test logS local bw normal:',-mean( mean_test_logS_local_norm),"| ",
@@ -411,6 +531,11 @@ cat(paste('mean test logS local bw:', -mean(mean_test_logS_local),"| ",
           
           ' time elapsed:',unname(time)))
 
+## integrals: 
 
+normalizing_integrals
 
+## parameters:
+
+params
 
