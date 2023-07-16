@@ -1,7 +1,11 @@
 RESULTS
 
+40 epochs:
+local.bw   local.bw.normal        local.bw.2      local.bw.normal.2         global.of     global.gs 
+2.428687          2.646326          1.299334               1.981806          2.632185      2.545107 
+
 400 epochs:
 local.bw   local.bw.normal        local.bw.2      local.bw.normal.2         global.of   global.gs 
-2.289005          2.779315          2.154385               2.575105          2.664980    2.499985 
+                                       
 
 
