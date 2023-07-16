@@ -276,7 +276,7 @@ smooth_IDR_density_h_opt=function(y,x,x_test,
     }
     
     
-    range=range(unique_order_y)+c(-10,10)
+    range=range(unique_order_y)+c(-50,50)
     
     
     #int=integrate(Vectorize(integrand),lower=range[1],upper=range[2],
@@ -341,6 +341,7 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
                                c=c,
                                nu=nu,
                                nu_init = nu_init,
+                               h_init=h_init,
                                normalize = TRUE)$integral
   
   if(progress){pb$tick()}
