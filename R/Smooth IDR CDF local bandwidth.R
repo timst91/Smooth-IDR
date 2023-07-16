@@ -47,6 +47,7 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
                                c=c,
                                nu=nu,
                                nu_init = nu_init,
+                               h_init=h_init,
                                normalize = TRUE)$integral
   
   if(progress){pb$tick()}
