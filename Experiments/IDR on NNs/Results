@@ -8,4 +8,7 @@ local.bw   local.bw.normal        local.bw.2      local.bw.normal.2         glob
 local.bw   local.bw.normal        local.bw.2      local.bw.normal.2         global.of   global.gs 
                                        
 
+4000 epochs:
+local bw 1     local bw 1 norm      local bw 2     local bw 2 norm       global bw of    global bw gs 
+2.349204       2.652392             1.408767              2.120843          2.839534        2.559080 
 
