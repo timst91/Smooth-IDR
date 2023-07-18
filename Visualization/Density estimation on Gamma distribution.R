@@ -1,5 +1,18 @@
+
+
 n=100
 
+
+X=runif(n,0,10)
+y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+
+x_test=6
+
+idr.fit=idr(y,data.frame(X))
+pred.idr=predict(idr.fit,data=data.frame(X=x_test))
+
+
+y_test=pred.idr[[1]]$points
 
 y_test=seq(0,60,l=40)
 nu=Inf
@@ -7,18 +20,24 @@ nu=Inf
 
 nsim=100
 
-H_init=seq(0.5,5,l=5)
-#H_init=c(0.01,0.5,1,2.5,5)
+#H_init=seq(0.5,5,l=5)
+H_init=c(0.01,0.5,1,2.5,5)
 
 C=c(0.25,0.5,1,4)
+C=c(0.25,1,4)
+
+
 
 res_logS=matrix(nrow=length(C),ncol=length(H_init))
 dens=list()
 
+
 col=2:6
+col= c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", 6)
 
-
-labels <- sapply(H_init, function(h) substitute(paste("h"[init], " = ", s), list( s= h)))
+labels=sapply(H_init, function(h) substitute(paste("h"[init], " = ", s), list( s= h)))
+legend_items = matrix(labels[1:4], nrow = 2, byrow = TRUE)
+legend_items=rbind(legend_items,c("",labels[5]))
 
 
 par(mfrow=c(2,2))
@@ -30,9 +49,11 @@ for (i in 1:length(C)){
   if(i==1){
     plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
          type='l',main=paste("c=",c),ylab="",xlab="Threshold",
-         ylim=c(0,0.1))
-    legend("topright",legend=labels,
-                  col=2:6,lty=1,cex=.6,bty="n")
+         ylim=c(0,0.06))
+    legend("topright",legend=legend_items,
+           col=c(col[1],col[3],NA,col[2],col[4],col[5]),
+           lty=1,cex=1,bty="n",ncol = 2,seg.len = 1,text.width = 4)
+    
   }else{plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
              type='l',main=paste("c=",c),ylab="",xlab="Threshold",
              ylim=c(0,0.07))}
@@ -58,5 +79,37 @@ for (i in 1:length(C)){
     lines(y_test,density,col=col[j],lwd=.4)
   }
 }
+
+
+
+plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
+     type='l',main="Global bandwidth density",ylab="",xlab="Threshold",
+     ylim=c(0,0.09))
+
+
+labels2 =sapply(H_init, function(h) substitute(paste("h", " = ", s), list( s= h)))
+legend_items = matrix(labels2[1:4], nrow = 2, byrow = TRUE)
+legend_items=rbind(legend_items,c("",labels2[5]))
+legend("topright",legend=legend_items,
+       col=c(col[1],col[3],NA,col[2],col[4],col[5]),
+       lty=1,cex=1,bty="n",ncol = 2,seg.len = 1,text.width = 4)
+
+
+for( i in (1:length(H_init))){
+  density=numeric(length(y_test))
+  for (sim in 1:nsim) {
+    X=runif(n,0,10)
+    y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+    
+    density=density+1/nsim*smooth_IDR_density(y,X,x_test = x_test,y_test = y_test,
+                                              nu=Inf,h=H_init[i])
+  }
+  lines(y_test,density,lwd=.4,col=col[i])
+}
+
+
+par(mfrow=c(1,1))
+
+
 
 par(mfrow=c(1,1))
