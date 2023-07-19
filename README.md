@@ -95,11 +95,8 @@ Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},
 with $X\sim \textup{Uniform}(0,10).$ We estimate the predictive distribution of $Y|X=6,$ while using for every method the normal kernel.
 
 
-![implementation sample size 100](visualization%20cdfs%20n=100.png)
+![implementation sample size 100](Visualization/density_nsim100.pdf)
 
-For smaller sample sizes, it is possible for local bandwidth smooth IDR to violate monotonicity. In this case, we incorporate the optional argument ```increasing = TRUE```, which informally corrects this behaviour. Simulation experiments with larger sample sizes however suggest that this correction is not neccessary, as seen below for the case $n=200.$
-
-![implementation sample size 200](Visualization%20cdfs%20n=200.png)
 
 Generally for moderate sample sizes, kernel estimation techniques with local bandwidth procedures tend to be less stable than with a global bandwidth. As we see in the plots, this is also the case for smooth IDR. On the other hand, in an experiment below that analyses the $\mathrm{MSE}$ for different sample sizes, we see that the smooth IDR with local bandwidth overcomes the version incorporating a global bandwith after a sample size around $n=1000$.
 
