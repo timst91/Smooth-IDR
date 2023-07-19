@@ -1,54 +1,92 @@
-n=c(seq(100,1400,l=60),seq(1500,3000,l=10))
+id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
-nsim=10
-time=c()
-cv=c()
-cv_time=c()
-of=c()
-of_time=c()
-nu=2.5
+N=seq(100,2000,l=20)
+ln=length(N)
 
-pb=progress_bar$new(total=length(n)*nsim)
-for (N in n){
-  h=(log(N)/N)^(1/9)
-  c=0
-  c_time=0
-  o=0
-  o_time=0
-  for (i in 1:nsim){
-    y=c()
-    X=sort(runif(N,0,10))
-    for (x in X) {y=append(y,rgamma(1,shape=x,scale=1/sqrt(x)))}
-    CV_int=CV_h(y,X,h,nu)
-    OF_int=OF_h(y,X,h,nu)
-    c=c+1/nsim*CV_int$logS
-    c_time=c_time+1/nsim*CV_int$time
-    o=o+1/nsim*OF_int$logS
-    o_time=o_time+1/nsim*OF_int$time
-    pb$tick()
-  }
-  print(c(o,c))
-  cv=append(cv,c)
-  cv_time=append(cv_time,c_time)
-  of=append(of,o)
-  of_time=append(of_time,o_time)
+H=numeric(6)
+H[2:6]=c(0.25,0.5,1,2,4)
+
+of_h=matrix(nrow=ln,ncol=length(H))
+cv_h=matrix(nrow=ln,ncol=length(H))
+nu=Inf
+
+time_of=numeric(ln)
+time_cv=numeric(ln)
+
+pb=progress_bar$new(total=ln*6)
+
+for(i in 1:ln){
   
+  n=N[i]
+  H[1]=(log(n)/n)^(1/9)
+  X=runif(n,0,10)
+  y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+  
+  for(j in 1:length(H)){
+    
+    h=H[j]
+    
+    of=OF_h(y,X,h,nu,time=TRUE)
+    of_h[i,j]=of$logS
+    time_of[i]=time_of[i]+1/length(H)*of$time
+    
+    cv=CV_h(y,X,h,nu,time=TRUE)
+    cv_h[i,j]=cv$logS
+    time_cv[i]=time_cv[i]+1/length(H)*cv$time
+    pb$tick()
+    if(j==1||j==6){
+      cat(paste('j:',j,"| ", "of_logS:",of$logS,"| ",
+                
+              "cv_logS:",cv$logS,"| ",  ' time elapsed:',of$time,cv$time))
+    }
+    
+  }
   
 }
 pb$terminate()
 
+results=list(cv=cv_h,of=of_h,time=time)
 
-par(mfrow=c(1,2))
-plot(n,cv,type='l',ylab="")
-lines(n,of,col=2)
-legend(x=1500,1.485, legend = expression(CV(h[n]), OF(h[n])), 
-       col = c(1, 2), lty = 1, bty = "n", xpd = NA,
-       x.intersp = 0.5)
+save(
+  list = "results",
+  # save in new file for each id
+  file = paste0("of_cv", id, ".rda")
+)
 
 
-plot(n,cv_time,type='l',ylim=c(min(of_time),max(cv_time)),ylab="",main = " Computational time (seconds)")
-lines(n,of_time,col=2)
-legend("topleft", legend = expression(CV(h[n]), OF(h[n])), 
-       col = c(1, 2), lty = 1, bty = "n", xpd = NA,x.intersp = 0.5)
 
-par(mfrow=c(1,1))
+
+
+############## Evaluation: #######################
+
+
+res <- vector("list", 100)   #100 simulations on Euler
+
+for (id in (1:100)) {
+  load(paste0("of_cv", id, ".rda"))
+  res[[id]] <- results
+}
+res <- do.call(rbind, res)
+
+save(list = "res", file = "of_cv_results.rda")
+
+
+
+mean_of_matrix=matrix(0,ncol=5,nrow=20)
+mean_cv_matrix=mean_of_matrix
+
+
+for(i in 1:100){
+  
+  mean_of_matrix=mean_of_matrix+1/nrow(mean_of_matrix)*res$of[[i]]
+  mean_cv_matrix=mean_cv_matrix+1/nrow(mean_cv_matrix)*res$cv[[i]]
+}
+
+
+
+plot(N,apply(log(abs(mean_of_matrix-mean_cv_matrix)[,-1]),1,mean),
+     ylim=c(-0.5,2.5),type='l',xlab="n",ylab="log(absolute difference)")
+
+lines(N,mean(log(abs(mean_of_matrix-mean_cv_matrix)[,1])),col=2)
+
+
