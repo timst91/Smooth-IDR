@@ -1,4 +1,10 @@
-library(isodistrreg)
+#install.packages("devtools")
+library(devtools)
+#loads the neccessary functions
+source_url("https://raw.githubusercontent.com/timst91/Smooth-IDR/main/R/all.R")
+
+
+
 
 
 y_test=seq(0,60,l=100)
