@@ -41,101 +41,80 @@ legend("right",c(expression(F[x=6](y)),"IDR",
 
 
 
+col= c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", 6)
 
-y=c()
-n=100
-X=sort(runif(n,0,10))
-
-for (x in X) {y=append(y,rgamma(1,shape=sqrt(x),scale=min(max(x,2),8)))}
-
-x_test=5
+labels=sapply(H_init, function(h) substitute(paste("h"[init], " = ", s), list( s= h)))
+legend_items = matrix(labels[1:4], nrow = 2, byrow = TRUE)
+legend_items=rbind(legend_items,c("",labels[5]))
 
 
+par(mfrow=c(2,2))
 
-idr_fit=idr(y,data.frame(X))
-
-pred=predict(idr_fit,data=data.frame(X=x_test))
-
-#y_test=pred[[1]]$points
-y_test=seq(-1,37,l=500)
-
-true_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
-
-
-NU=c(seq(2.001,50,l=100),Inf)
-h=seq(0.1,15,l=50)
-
-grid2=expand.grid(NU,h)
-
-of_h_nu=c()
-pb <- progress_bar$new(total=nrow(grid2))
-
-for (i in 1:nrow(grid2)){
+for (i in 1:length(C)){
+  c=C[i]
   
-  nu=as.numeric(grid2[i,])[1]
-  h=as.numeric(grid2[i,])[2]
-  of=OF_h(y,X,h,nu)$logS
-  of_h_nu=append(of_h_nu,
-                 of)
-  #print(of)
-  pb$tick()
+  
+  if(i==1){
+    plot(y_test,pgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
+         type='l',main=paste("c=",c),ylab="",xlab="Threshold"
+        )
+   
+    
+  }else{plot(y_test,pgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
+             type='l',main=paste("c=",c),ylab="",xlab="Threshold",
+             )}
+  
+  for(j in 1:length(H_init)){
+    cdf=numeric(length(y_test))
+    print(c(i,j))
+    h_init=H_init[j]
+    for(sim in 1:nsim){
+      X=runif(n,0,10)
+      y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+      
+      if(sim%%25==0){print(sim)}
+      local=smooth_IDR_CDF_h_opt(y,X,x_test=x_test,
+                                     c=c,
+                                     h_init = h_init,
+                                     y_test = y_test,nu=Inf,
+                                     progress = TRUE)
+      cdf=cdf+1/nsim*local$cdf
+      
+    }
+    cdfs=append(cdf,list(cdf))
+    lines(y_test,cdf,col=col[j],lwd=.4)
+  }
 }
 
-nu_opt_init=as.numeric(grid2[which.min(of_h_nu),])[1]
-h_opt_init=as.numeric(grid2[which.min(of_h_nu),])[2]
-pb$terminate()
 
 
-c=seq(0.25,10,l=30)
+plot(y_test,pgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
+     type='l',main="Global bandwidth CDF",ylab="",xlab="Threshold"
+     )
 
-grid=expand.grid(NU,c)
 
-of_c_nu=c()
-pb <- progress_bar$new(total=nrow(grid))
+labels2 =sapply(H_init, function(h) substitute(paste("h", " = ", s), list( s= h)))
+legend_items = matrix(labels2[1:4], nrow = 2, byrow = TRUE)
+legend_items=rbind(legend_items,c("",labels2[5]))
 
-for (i in 1:nrow(grid)){
-  
-  nu=as.numeric(grid[i,])[1]
-  c=as.numeric(grid[i,])[2]
-  of_c_nu=append(of_c_nu,
-                 OF_c(y,X,c,nu,nu_init=nu_opt_init,h_init=h_opt_init))
-  pb$tick()
+
+legend("bottomright",legend=legend_items,
+       col=c(col[1],col[3],NA,col[2],col[4],col[5]),
+       lty=1,cex=1,bty="n",ncol = 2)
+
+
+for( i in (1:length(H_init))){
+  density=numeric(length(y_test))
+  for (sim in 1:nsim) {
+    X=runif(n,0,10)
+    y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
+    
+    density=density+1/nsim*smooth_IDR_CDF(y,X,x_test = x_test,y_test = y_test,
+                                              nu=Inf,h=H_init[i])
+  }
+  lines(y_test,density,lwd=.4,col=col[i])
 }
 
-nu_opt=as.numeric(grid[which.min(of_c_nu),])[1]
-c_opt=as.numeric(grid[which.min(of_c_nu),])[2]
-pb$terminate()
 
-smooth_CDF=smooth_IDR_CDF(y,X,h=h_opt_init,nu=nu_opt_init,y_test=y_test,x_test=x_test)
-smooth_CDF_local=smooth_IDR_CDF_h_opt(y,X,h_init=h_opt_init,nu_init=nu_opt_init,
-                                      c=c_opt,nu=nu_opt,
-                                      y_test=y_test,x_test=x_test)
-smooth_CDF_local_uncorrected=smooth_IDR_CDF_h_opt(y,X,h_init=h_opt_init,nu_init=nu_opt_init,
-                                                  c=c_opt,nu=nu_opt,
-                                                 y_test=y_test,x_test=x_test,
-                                                  increasing = FALSE)
-
-plot(pred)
-lines(y_test,smooth_CDF,col=2)
-lines(y_test,smooth_CDF_local,col=1)
-lines(y_test,smooth_CDF_local_uncorrected,col=1,lty=2)
-lines(y_test,true_cdf,lty=2,col="darkgreen")
-
-Legend1= substitute(paste("smooth IDR with global bw, ", h[opt], " = ", H, " , ", nu[opt]," = ",nU)
-                    , list(H = h_opt_init, nU=nu_opt_init))
-
-Legend2=substitute(paste("smooth IDR with local bw, ", c[opt], " = ", C,
-                         " , ", nu[opt]," = ",nU), list(C = c_opt, nU=nu_opt))
-
-
-
-legend("right",c("IDR", Legend1, Legend2,
-                 "smooth IDR with local bw, uncorrected for monotonicity",
-                      expression(F[5](y))),
-       col=c("blue",2,1,1,"darkgreen"),lty=c(1,1,1,2,2))
-
-
-
-
-
+par(mfrow=c(1,1))
 
