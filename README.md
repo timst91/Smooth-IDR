@@ -88,11 +88,11 @@ It is thus advantageous, that the absolute difference $\max_{c \in [c_{\min}, c_
 
 ## Implementation
 
-To visualize the concept, we compute the IDR and the smooth IDR CDF`s for 100 and 200 samples of 
+To visualize the impact of the coefficients $c,h,h_{init}$, we compute the mean of the predicted smooth IDR CDF`s and densities for 100 simulations of each a hundred realizations of
 ```math
 Y|X\sim \textup{Gamma}(\textup{shape}=\sqrt{X},\textup{scale}=\min{(\max{(X,2)},8)}),
 ````
-with $X\sim \textup{Uniform}(0,10).$ We estimate the predictive distribution of $Y|X=5,$ where for the smooth IDR CDF's the parameters for the local and global bandwidth are selected by a grid search to mminimize the $\mathrm{OF}$ criterion.
+with $X\sim \textup{Uniform}(0,10).$ We estimate the predictive distribution of $Y|X=6,$ while using for every method the normal kernel.
 
 
 ![implementation sample size 100](visualization%20cdfs%20n=100.png)
