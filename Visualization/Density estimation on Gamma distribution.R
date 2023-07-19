@@ -1,5 +1,6 @@
 
 
+
 n=100
 
 
@@ -8,12 +9,6 @@ y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
 
 x_test=6
 
-idr.fit=idr(y,data.frame(X))
-pred.idr=predict(idr.fit,data=data.frame(X=x_test))
-
-
-y_test=pred.idr[[1]]$points
-
 y_test=seq(0,60,l=40)
 nu=Inf
 
@@ -21,7 +16,7 @@ nu=Inf
 nsim=100
 
 #H_init=seq(0.5,5,l=5)
-H_init=c(0.01,0.5,1,2.5,5)
+H_init=c(0.1,0.5,1,2.5,5)
 
 C=c(0.25,0.5,1,4)
 C=c(0.25,1,4)
@@ -49,14 +44,14 @@ for (i in 1:length(C)){
   if(i==1){
     plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
          type='l',main=paste("c=",c),ylab="",xlab="Threshold",
-         ylim=c(0,0.06))
+         ylim=c(0,0.07))
     legend("topright",legend=legend_items,
            col=c(col[1],col[3],NA,col[2],col[4],col[5]),
-           lty=1,cex=1,bty="n",ncol = 2,seg.len = 1,text.width = 4)
+           lty=1,cex=.8,bty="n",ncol = 2,seg.len = 1,text.width = 4)
     
   }else{plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
              type='l',main=paste("c=",c),ylab="",xlab="Threshold",
-             ylim=c(0,0.07))}
+             ylim=c(0,0.06))}
   
   for(j in 1:length(H_init)){
     density=numeric(length(y_test))
@@ -83,8 +78,8 @@ for (i in 1:length(C)){
 
 
 plot(y_test,dgamma(y_test,shape = sqrt(x_test),scale=min(max(x_test,2),8)),
-     type='l',main="Global bandwidth density",ylab="",xlab="Threshold",
-     ylim=c(0,0.09))
+     type='l',main="Global bandwidth density",ylab="",xlab="Threshold"
+     )
 
 
 labels2 =sapply(H_init, function(h) substitute(paste("h", " = ", s), list( s= h)))
@@ -92,7 +87,7 @@ legend_items = matrix(labels2[1:4], nrow = 2, byrow = TRUE)
 legend_items=rbind(legend_items,c("",labels2[5]))
 legend("topright",legend=legend_items,
        col=c(col[1],col[3],NA,col[2],col[4],col[5]),
-       lty=1,cex=1,bty="n",ncol = 2,seg.len = 1,text.width = 4)
+       lty=1,cex=.8,bty="n",ncol = 2,seg.len = 1,text.width = 4)
 
 
 for( i in (1:length(H_init))){
@@ -112,4 +107,9 @@ par(mfrow=c(1,1))
 
 
 
-par(mfrow=c(1,1))
+
+
+
+
+
+
