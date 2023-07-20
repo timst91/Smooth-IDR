@@ -38,6 +38,10 @@ lines(y_test,smooth_IDR_CDF_h_opt(y,X,nu=nu,c=0.5,x_test=x_test,y_test = y_test,
 lines(y_test,smooth_IDR_CDF_h_opt(y,X,nu=nu,c=2,x_test=x_test,y_test = y_test,
                                   progress = TRUE)$cdf,col=6,lty=3,lwd=.8)
 
+h_opt_y=smooth_IDR_CDF_h_opt(y,X,nu=nu,c=2,x_test=x_test,y_test = y_test,
+                    progress = TRUE)$h_opt
+segments(y_test[-c(30:40)], 0, y_test[-c(30:40)], normalize(h_opt_y[-c(30:40)]), col = "gray")
+
 legend("right",c(expression(F[x=6](y)),"IDR",
                        "smooth IDR","smooth IDR local bw c=0.5",
                        "smooth IDR local bw c=1", "smooth IDR local bw c=2"),
