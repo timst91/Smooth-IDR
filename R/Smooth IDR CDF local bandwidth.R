@@ -146,6 +146,6 @@ smooth_IDR_CDF_h_opt=function(y,x,x_test,
   if(progress){pb$terminate()}
   
   cdf=1/int*cdf
-  return(list(cdf=cdf,integral=int))
+  return(list(cdf=cdf,integral=int,h_opt=sapply(y_test,h_opt))))
   
 }
