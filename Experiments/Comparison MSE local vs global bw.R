@@ -155,18 +155,31 @@ par(mfrow=c(1,1))
 
 ########## MSE plot ###############
 
-MSE_local_N=apply(CDFs_local[,ind_N],2,function(x){
-  sum((x-pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8)))^2)})
+true_cdf=pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8))
 
-MSE_of_N=apply(CDFs_of[,ind_N],2,function(x){
-  sum((x-pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8)))^2)})
+MSE_local=0
+MSE_global_of=0
+MSE_global_cv=0
+for (i in 1:length(ids)){
+  MSE_local=MSE_local+1/length(ids)*apply((res[[i]]-true_cdf),2,function(x){mean(x^2)})
+  
+}
 
 
-MSE_cv_N=apply(CDFs_cv[,ind_N],2,function(x){
-  sum((x-pgamma(y_test,shape=sqrt(x_test),scale=min(max(x_test,2),8)))^2)})
+for (i in (length(ids)+1):(2*length(ids))){
+  MSE_global_of=MSE_global_of+1/length(ids)*apply((res[[i]]-true_cdf),2,function(x){mean(x^2)})
+  
+}
+for (i in (2*length(ids)+1):(3*length(ids))){
+  MSE_global_cv=MSE_global_cv+1/length(ids)*apply((res[[i]]-true_cdf),2,function(x){mean(x^2)})
+  
+}
+plot(N,log(MSE_local),type="l",ylim=c(min(log(MSE_global_of)),max(log(MSE_local))),ylab="MSE",xlab="n")
+lines(N,log(MSE_global_of),col=2)
+lines(N,log(MSE_global_cv),col=4)
 
-plot(N[ind_N],MSE_local_N,type="b",pch=3,ylim=c(0.3,0.6))
-lines(N[ind_N],MSE_cv_N,type="b",pch=2,col=2)
-
-lines(N[ind_N],MSE_of_N,type="b",pch=4,col=3)
+legend("topright",c("local bw",
+                    "global bw OF",
+                    "global bw CV"),
+       col=c(1,2,4),lty=1,bty="n")
 
