@@ -94,8 +94,41 @@ for(i in 1:100){
 
 
 plot(N,apply(log(abs(mean_of_matrix-mean_cv_matrix)[,-1]),1,mean),
-     ylim=c(-0.5,2.5),type='l',xlab="n",ylab="log(absolute difference)")
+     ylim=c(-0.5,2.5),type='l',xlab="n",ylab="log(absolute difference)",col=4)
 
-lines(N,mean(log(abs(mean_of_matrix-mean_cv_matrix)[,1])),col=2)
+lines(N,mean(log(abs(mean_of_matrix-mean_cv_matrix)[,1])))
+
+
+
+###################### SINGLE PLOT FOR VISUALIZATION OF BANDWIDTH CHOICE ################################
+Hh=c(0.25,0.5,1:15)
+
+ind_n=c(1,5,10)
+ind_n=1
+nsim=100
+
+par(mfrow=c(1,length(ind_n)))
+for( i in 1:length(ind_n)){
+  n=N[ind_n[i]]
+  of=0
+  cv=0
+  for(sim in 1:nsim){
+    print(sim)
+    X=runif(n,0,10)
+    y=rgamma(n,shape=sqrt(X),scale = min(max(X,2),8))
+    of=of+1/nsim*sapply(Hh,function(u){OF_h(y,X,u,Inf,progress = 1)})
+    cv=cv+1/nsim*sapply(Hh,function(u){CV_h(y,X,u,Inf,progress = 1)})
+  }
+  
+  plot(Hh,log(of),type="b",xlim=c(0,10.4),ylab="log(score)",xlab="h",col=2)
+  legend("topright",c("OF","CV"),col=c(2,1),lty=1,bty="n")
+  lines(Hh,log(cv),type="b",col=1) 
+  abline(v=Hh[which.min(of)],lty=2,col=2)
+  abline(v=Hh[which.min(cv)],col=1,lty=3)
+}
+
+
+
+
 
 
