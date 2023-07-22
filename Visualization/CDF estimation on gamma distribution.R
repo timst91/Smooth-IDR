@@ -116,15 +116,15 @@ legend("bottomright",legend=legend_items,
 
 
 for( i in (1:length(H_init))){
-  density=numeric(length(y_test))
+  cdf=numeric(length(y_test))
   for (sim in 1:nsim) {
     X=runif(n,0,10)
     y=rgamma(n,shape=sqrt(X),scale=min(max(X,2),8))
     
-    density=density+1/nsim*smooth_IDR_CDF(y,X,x_test = x_test,y_test = y_test,
+    cdf=cdf+1/nsim*smooth_IDR_CDF(y,X,x_test = x_test,y_test = y_test,
                                               nu=Inf,h=H_init[i])
   }
-  lines(y_test,density,lwd=.4,col=col[i])
+  lines(y_test,cdf,lwd=.4,col=col[i])
 }
 
 
